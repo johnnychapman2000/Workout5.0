@@ -1,0 +1,279 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Workout v14</title><style>:root{--bg:#08111f;--red:#ff5757;--green:#22c55e;--muted:#9fb0c7;--border:#283447}body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:#fff;max-width:480px;margin:auto;padding:14px 14px 120px}.hero{background:linear-gradient(135deg,#1b2231,#311517);border:1px solid #c33;border-radius:24px;padding:18px}.title{text-align:center;font-size:2rem;font-weight:700}.ring{width:110px;height:110px;border-radius:50%;margin:12px auto;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700}.prog{text-align:center;color:var(--muted)}.section{margin:14px 4px;color:var(--muted)}.row{display:grid;grid-template-columns:1fr 80px 24px;align-items:center;background:linear-gradient(180deg,#131f31,#101827);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:7px;cursor:pointer}.target{text-align:right;padding-right:22px}.dot{width:14px;height:14px;border-radius:50%}.red{background:#ff5757}.green{background:#22c55e}.navwrap{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);width:92%;max-width:440px}.nav{background:#131b29;border-radius:32px;padding:14px 10px;display:flex;justify-content:space-between}.nav a{text-decoration:none;color:#9fb0c7;text-align:center;font-size:.75rem;width:20%}.active{color:#fff;font-weight:700}.fab{position:absolute;left:50%;top:-18px;transform:translateX(-50%);width:64px;height:64px;border-radius:50%;background:#ff5757;border:6px solid #131b29;color:#fff;font-size:34px;display:flex;align-items:center;justify-content:center}.modal{display:none;position:fixed;inset:0;background:#000a}.content{background:#161b22;width:90%;max-width:400px;margin:10% auto;padding:20px;border-radius:18px}input,select{width:100%;padding:10px;margin:6px 0;background:#0d1117;color:#fff;border:1px solid #333}.btn{width:100%;padding:12px;border:none;margin-top:8px}.save{background:#ff5757;color:#fff}.cancel{background:#374151;color:#fff}</style></head><body><div class='hero'><div id='title' class='title'>Loading...</div><div id='ring' class='ring'>0%</div><div id='prog' class='prog'></div></div><div id='list'></div><div id='workoutModal' class='modal'><div class='content'><h3 id='ename'></h3><input id='sets' placeholder='Sets'><input id='reps' placeholder='Reps'><input id='weight' placeholder='Weight'>
+
+<button id='saveBtn' class='btn save' onclick='saveExercise()'>Save Workout</button><button class='btn cancel' onclick='closeWorkout()'>Cancel</button></div></div>
+
+<div id='quickModal' class='modal'>
+  <div class='content'>
+    <h3>Quick Entry</h3>
+
+    <select id='area' onchange='loadQuickExercises()'>
+      <option>Abs</option>
+      <option>Back</option>
+      <option>Biceps</option>
+      <option>Body</option>
+      <option>Cardio</option>
+      <option>Chest</option>
+      <option>Legs</option>
+      <option>Shoulders</option>
+      <option>Stretching</option>
+      <option>Triceps</option>
+    </select>
+
+    <select id='quickExercise' onchange='quickExerciseChanged()'></select>
+
+    <div id='quickFields'></div>
+
+    <button class='btn save' onclick='saveQuickEntry()'>Save</button>
+
+    <button class='btn cancel' onclick='quickModal.style.display="none"'>
+      Cancel
+    </button>
+  </div>
+</div>
+
+<div class='navwrap'>
+
+<div class='fab' onclick='quickModal.style.display="block";loadQuickExercises();'>
+
++</div><div class='nav'><a href='index.html'>🏠<br>Home</a><a href='history.html'>📜<br>History</a><span style='width:20%'></span><a href='stats.html'>📊<br>Stats</a><a class='active' href='workout.html'>💪<br>Workout</a></div></div><script>
+
+const API='https://script.google.com/macros/s/AKfycbzAgY1d5Ecb7hms3jpIktsEedUTjkfdrH_pSWcVwndW-NDyNdraXNDJAjMM6ly7PW5o/exec';
+
+let CW,CE,saving=false,EXERCISES=[];
+
+async function init(){try{
+
+const w=await(await fetch(API+'?action=getCurrentWorkoutDetails')).json();
+const p=await(await fetch(API+'?action=getWorkoutProgress')).json();
+const steps=await(await fetch(API+'?action=getTodaySteps')).json();
+
+CW=w;
+
+EXERCISES=await(
+  await fetch(API+'?action=getExerciseMaster')
+).json();
+
+window.EXERCISES=await(
+  await fetch(API+'?action=getExerciseMaster')
+).json();
+
+title.innerText=w.PlanName;let pct=p.PercentComplete||0;ring.innerText=pct+'%';ring.style.background='conic-gradient(#ff5757 '+(pct*3.6)+'deg,#223a58 0)';prog.innerText=p.CompletedExercises+' / '+p.TotalExercises+' Complete';let done=p.CompletedExerciseIDs||[];
+
+let h='<div class=section>Remaining</div>';
+
+if(!steps.completed){
+  h+=`<div class=row onclick="openSteps()"><div>Steps</div><div class=target>Daily</div><div class='dot red'></div></div>`;
+}
+
+
+w.Exercises.filter(x=>!done.includes(String(x.ExerciseID))).forEach(e=>h+=row(e,false));
+
+h+='<div class=section>Completed</div>';
+if(steps.completed){
+  h+=`<div class=row><div>Steps</div><div class=target>${steps.steps}</div><div class='dot green'></div></div>`;
+}
+
+w.Exercises.filter(x=>done.includes(String(x.ExerciseID))).forEach(e=>h+=row(e,true));list.innerHTML=h;}
+
+catch(e){
+  console.error(e);
+
+  list.innerHTML =
+    '<div style="color:#ff5757;padding:20px;">' +
+    e.message +
+    '</div>';
+}
+
+}function row(e,c){return `<div class=row onclick='openEx(${e.ExerciseID})'><div>${e.ExerciseName}</div><div class=target>${e.TargetSets}×${e.TargetReps}</div><div class='dot ${c?'green':'red'}'></div></div>`}function openEx(id){CE=CW.Exercises.find(x=>x.ExerciseID==id);ename.innerText=CE.ExerciseName;sets.value=CE.TargetSets||'';reps.value=CE.TargetReps||'';reps.style.display='block';weight.style.display='block';weight.placeholder='Weight';if(CE.ExerciseType==='Bodyweight'){weight.style.display='none';}if(CE.ExerciseType==='Duration'){weight.placeholder='Duration (seconds)';}workoutModal.style.display='block';}
+
+	function openSteps(){
+		CE={
+    		ExerciseID:41,
+    		ExerciseName:'Steps',
+    		ExerciseType:'Endurance',
+    		WorkoutArea:'Cardio'
+  	};
+
+  	ename.innerText='Steps';
+  	sets.placeholder='Steps Count';
+
+  	reps.style.display='none';
+  	weight.style.display='none';
+
+  	workoutModal.style.display='block';
+	}
+
+function closeWorkout(){workoutModal.style.display='none';sets.placeholder='Sets';reps.style.display='block';weight.style.display='block';weight.placeholder='Weight';}async function saveExercise(){
+
+  if(saving) return;
+
+  saving=true;
+
+  saveBtn.disabled=true;
+  saveBtn.innerText='Processing...';
+
+  const payload={
+    action:'saveWorkoutLog',
+    WorkoutDate:new Date().toISOString().split('T')[0],
+    PlanName:CW.PlanName,
+    WorkoutArea:CE?CE.WorkoutArea:'Steps',
+    ExerciseID:CE?CE.ExerciseID:'Steps',
+    ExerciseName:CE?CE.ExerciseName:'Steps',
+    ExerciseType:CE?CE.ExerciseType:'Steps',
+    Sets:sets.value||'',
+    Reps:reps.style.display==='none'?'':reps.value,
+    Weight:weight.style.display==='none'?'':weight.value
+  };
+
+  try{
+
+    const response=await fetch(API,{
+      method:'POST',
+      body:JSON.stringify(payload)
+    });
+
+    saveBtn.innerText='Saved ✓';
+
+    setTimeout(()=>{
+      location.reload();
+    },800);
+
+  }catch(err){
+
+    saveBtn.disabled=false;
+    saveBtn.innerText='Save Workout';
+    saving=false;
+
+    alert('Save Failed');
+  }
+}
+
+
+function loadQuickExercises(){
+
+  const area=document.getElementById('area').value;
+  const dd=document.getElementById('quickExercise');
+
+  dd.innerHTML='';
+
+  EXERCISES
+    .filter(x=>x.WorkoutArea===area && x.Active==='Yes')
+    .forEach(ex=>{
+      dd.innerHTML+=
+        `<option value="${ex.ExerciseID}">
+          ${ex.ExerciseName}
+        </option>`;
+    });
+
+  quickExerciseChanged();
+}
+
+function quickExerciseChanged(){
+
+	const area=document.getElementById('area').value;
+	const selectedName=document.getElementById('quickExercise').selectedOptions[0].text;
+
+	const ex=EXERCISES.find(
+	  x=>x.WorkoutArea===area &&
+	     x.ExerciseName===selectedName
+);
+
+if(!ex)return;
+
+
+
+const fields=document.getElementById('quickFields');
+
+if(ex.ExerciseType==='Weight'){
+
+  fields.innerHTML=
+    '<input id="quickSets" placeholder="Sets">'+
+    '<input id="quickReps" placeholder="Reps">'+
+    '<input id="quickWeight" placeholder="Weight">';
+
+  return;
+}
+
+	if(ex.ExerciseType==='Bodyweight'){
+  		fields.innerHTML='<input id="quickSets" placeholder="Sets">'+'<input id="quickReps" placeholder="Reps">';
+	  	return;
+	}
+
+	if(ex.ExerciseType==='Endurance'){
+  	let label=ex.DistanceUnit||'Distance';
+  	if(label==='Steps'){
+    		label='Step Count';
+  	}
+  	fields.innerHTML=
+    		`<input id="quickDistance" placeholder="${label}">`;
+  	return;
+	}
+}
+
+async function saveQuickEntry(){
+
+  const area=document.getElementById('area').value;
+  const selectedName=document.getElementById('quickExercise').selectedOptions[0].text;
+
+  const ex=EXERCISES.find(
+    x=>x.WorkoutArea===area &&
+       x.ExerciseName===selectedName
+  );
+
+  if(!ex)return;
+
+  let payload={
+    action:'saveWorkoutLog',
+    WorkoutDate:new Date().toISOString().split('T')[0],
+    PlanName:CW.PlanName,
+    WorkoutArea:ex.WorkoutArea,
+    ExerciseID:ex.ExerciseID,
+    ExerciseName:ex.ExerciseName,
+    ExerciseType:ex.ExerciseType
+  };
+
+  if(ex.ExerciseType==='Weight'){
+    payload.Sets=document.getElementById('quickSets').value||'';
+    payload.Reps=document.getElementById('quickReps').value||'';
+    payload.Weight=document.getElementById('quickWeight').value||'';
+  }
+
+  if(ex.ExerciseType==='Bodyweight'){
+    payload.Sets=document.getElementById('quickSets').value||'';
+    payload.Reps=document.getElementById('quickReps').value||'';
+  }
+
+  if(ex.ExerciseType==='Endurance'){
+
+    const distance=document.getElementById('quickDistance').value||'';
+
+    if(ex.ExerciseName==='Steps'){
+      payload.Sets=distance;
+    }else{
+      payload.Distance=distance;
+      payload.DistanceUnit=ex.DistanceUnit;
+    }
+  }
+
+  try{
+
+    await fetch(API,{
+      method:'POST',
+      body:JSON.stringify(payload)
+    });
+
+    quickModal.style.display='none';
+    location.reload();
+
+  }catch(err){
+
+    alert('Save Failed');
+  }
+}
+
+
+init();
+
+</script>
+</body>
+</html>

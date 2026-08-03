@@ -1,1 +1,290 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stats</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>:root{--bg:#0D1117;--card:#161B22;--red:#B22222;--red2:#ef4444;--text:#F8FAFC;--muted:#94A3B8;--border:#2D333B}body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;max-width:480px;margin:auto;padding:20px 20px 90px}*{box-sizing:border-box}.title{text-align:center;font-size:2rem;font-weight:700;margin-bottom:15px}.filters{display:flex;gap:8px;margin-bottom:15px}.btn{flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:#fff}.active{background:var(--red)}.hero,.card{background:linear-gradient(180deg,#161B22,#111827);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}.hero{border-color:var(--red)}.label{color:var(--muted)}.value{font-size:2rem;font-weight:700;margin-top:8px}.small{font-size:1.3rem;font-weight:700;margin-top:8px}.nav{position:fixed;bottom:0;width:100%;max-width:480px;display:flex;justify-content:space-around;background:#111827;padding:12px 0;border-top:1px solid var(--border)}</style></head><body><div class="title">Stats</div><div class="filters"><button id="d" class="btn active" onclick="setPeriod('daily')">Daily</button><button id="m" class="btn" onclick="setPeriod('monthly')">Monthly</button><button id="y" class="btn" onclick="setPeriod('yearly')">Yearly</button></div><div class="hero"><div class="label">Total Volume</div><div id="tv" class="value">0 lbs</div></div><div class="card"><div class="label">Exercises Logged</div><div id="ec" class="value">0</div></div><div class="card"><div class="label">Workout Days</div><div id="wd" class="value">0</div></div><div class="card"><div class="label">Average Volume</div><div id="av" class="value">0 lbs</div></div><div class="card"><div class="label">Top Exercise</div><div id="te" class="small">None</div></div><div class="nav">🏠 Home &nbsp; 📜 History &nbsp; 📊 Stats &nbsp; 💪 Workout</div><script>const API='https://script.google.com/macros/s/AKfycbzpo3F0tA4Byh9Fo694tHbrSZrjBI48GfAF8JadEYVhSyi9zXsGVR2jTTqOJtkCVDlu/exec';let all=[];async function init(){all=await(await fetch(API+'?action=getWorkoutHistory')).json();render('daily')}function setPeriod(p){d.classList.remove('active');m.classList.remove('active');y.classList.remove('active');if(p==='daily')d.classList.add('active');if(p==='monthly')m.classList.add('active');if(p==='yearly')y.classList.add('active');render(p)}function render(period){let data=[...all];let now=new Date();data=data.filter(x=>{let dt=new Date(x.WorkoutDate||x.Timestamp);if(period==='daily')return dt.toDateString()===now.toDateString();if(period==='monthly')return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();return dt.getFullYear()===now.getFullYear()});let vol=0,max=0,top='None';data.forEach(x=>{let v=Number(x.Volume||0);vol+=v;if(v>max){max=v;top=x.ExerciseName||'Unknown'}});let days=new Set(data.map(x=>String(x.WorkoutDate).substring(0,10))).size;tv.innerText=vol.toLocaleString()+' lbs';ec.innerText=data.length;wd.innerText=days;av.innerText=(data.length?Math.round(vol/data.length):0).toLocaleString()+' lbs';te.innerText=top+' ('+max.toLocaleString()+' lbs)'}init();</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+
+<title>Stats</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0D1117;
+  --card: #161B22;
+  --red: #B22222;
+  --red2: #ef4444;
+  --text: #F8FAFC;
+  --muted: #94A3B8;
+  --border: #2D333B;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial,sans-serif;
+  max-width: 480px;
+  margin: auto;
+  padding: 20px 20px 90px;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: #fff;
+}
+.btn.active {
+  background: var(--red);
+}
+.nav a.active {
+  color: #fff;
+  font-weight: 700;
+  background: transparent;
+}
+
+
+.active {
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+}
+
+.hero,
+.card {
+  background: linear-gradient(180deg, #161B22, #111827);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.hero {
+  border-color: var(--red);
+}
+
+.label {
+  color: var(--muted);
+}
+
+.value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.small {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.navwrap {
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 440px;
+}
+
+.nav {
+  background: #131b29;
+  border-radius: 32px;
+  padding: 14px 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #9fb0c7;
+  text-align: center;
+  font-size: .75rem;
+  width: 20%;
+}
+
+.fab {
+  position: absolute;
+  left: 50%;
+  top: -11px;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #ff5757;
+  border: 6px solid #ff5757;
+  color: #fff;
+  font-size: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+<div class="title">Stats</div>
+
+<div class="filters">
+  <button id="d" class="btn active" onclick="setPeriod('daily')">
+    Daily
+  </button>
+
+  <button id="m" class="btn" onclick="setPeriod('monthly')">
+    Monthly
+  </button>
+
+  <button id="y" class="btn" onclick="setPeriod('yearly')">
+    Yearly
+  </button>
+</div>
+
+<div class="hero"><div class="label">Total Volume</div><div id="tv" class="value">0 lbs</div></div><div class="card"><div class="label">Exercises Logged</div><div id="ec" class="value">0</div></div><div class="card"><div class="label">Workout Days</div><div id="wd" class="value">0</div></div><div class="card"><div class="label">Average Volume</div><div id="av" class="value">0 lbs</div></div><div class="card"><div class="label">Top Exercise</div><div id="te" class="small">None</div></div>
+
+
+
+<script>
+
+const API =
+  'https://script.google.com/macros/s/AKfycbxotl_aVh8jQGGq1DoXYf_4L7wyhIVyen1cX9TXjK_3bw8nmUh1hIbb_GpA9_Yd0ypB/exec';
+
+let all = [];
+
+async function init() {
+  all = await (
+    await fetch(API + '?action=getWorkoutHistory')
+  ).json();
+
+  render('daily');
+}
+
+function setPeriod(p) {
+  d.classList.remove('active');
+  m.classList.remove('active');
+  y.classList.remove('active');
+
+  if (p === 'daily') {
+    d.classList.add('active');
+  }
+
+  if (p === 'monthly') {
+    m.classList.add('active');
+  }
+
+  if (p === 'yearly') {
+    y.classList.add('active');
+  }
+
+  render(p);
+}
+
+function render(period) {
+
+  let data = [...all];
+  let now = new Date();
+
+  data = data.filter(x => {
+
+    let dt = new Date(
+      x.WorkoutDate || x.Timestamp
+    );
+
+    if (period === 'daily') {
+      return dt.toDateString() === now.toDateString();
+    }
+
+    if (period === 'monthly') {
+      return (
+        dt.getMonth() === now.getMonth() &&
+        dt.getFullYear() === now.getFullYear()
+      );
+    }
+
+    return dt.getFullYear() === now.getFullYear();
+  });
+
+  let vol = 0;
+  let max = 0;
+  let top = 'None';
+
+  data.forEach(x => {
+
+    let v = Number(x.Volume || 0);
+
+    vol += v;
+
+    if (v > max) {
+      max = v;
+      top = x.ExerciseName || 'Unknown';
+    }
+  });
+
+  let days = new Set(
+    data.map(x =>
+      String(x.WorkoutDate).substring(0, 10)
+    )
+  ).size;
+
+  tv.innerText =
+    vol.toLocaleString() + ' lbs';
+
+  ec.innerText =
+    data.length;
+
+  wd.innerText =
+    days;
+
+  av.innerText =
+    (
+      data.length
+        ? Math.round(vol / data.length)
+        : 0
+    ).toLocaleString() + ' lbs';
+
+  te.innerText =
+    top +
+    ' (' +
+    max.toLocaleString() +
+    ' lbs)';
+}
+
+init();
+</script>
+
+<div class='navwrap'>
+
+<div class='fab' onclick='quickModal.style.display="block";loadQuickExercises();'>
+
++</div><div class='nav'><a href='index.html'>🏠<br>Home</a><a href='history.html'>📜<br>History</a><span style='width:20%'></span>
+
+<a class='active' href='stats.html'>📊<br>Stats</a>
+<a href='workout.html'>💪<br>Workout</a></div></div>
+
+</body>
+</html>

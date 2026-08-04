@@ -1,0 +1,218 @@
+:root{
+	--bg:#08111f;
+	--card:#131b29;
+	--card2:#101827;
+	--red:#ff5757;
+	--green:#22c55e;
+	--muted:#9fb0c7;
+	--border:#283447;
+	--text:#ffffff;
+}
+
+/* ====================
+   GLOBAL
+==================== */
+
+body{
+	margin:0;
+	background:var(--bg);
+	font-family:Arial,sans-serif;
+	color:var(--text);
+	max-width:480px;
+	margin:auto;
+	padding:14px 14px 120px;
+}
+
+.title{
+	text-align:center;
+	font-size:2rem;
+	font-weight:700;
+}
+
+.section{
+	margin:14px 4px;
+	color:var(--muted);
+}
+
+/* ====================
+   HERO
+==================== */
+
+.hero{
+	background:linear-gradient(135deg,#1b2231,#311517);
+	border:1px solid #c33;
+	border-radius:24px;
+	padding:18px;
+}
+
+.ring{
+	width:110px;
+	height:110px;
+	border-radius:50%;
+	margin:12px auto;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	font-size:1.4rem;
+	font-weight:700;
+}
+
+.prog{
+	text-align:center;
+	color:var(--muted);
+}
+
+/* ====================
+   CARDS / ROWS
+==================== */
+
+.row{
+	display:grid;
+	grid-template-columns:1fr 80px 24px;
+	align-items:center;
+	background:linear-gradient(
+		180deg,
+		#131f31,
+		#101827
+	);
+	border:1px solid var(--border);
+	border-radius:14px;
+	padding:12px;
+	margin-bottom:7px;
+	cursor:pointer;
+}
+
+.target{
+	text-align:right;
+	padding-right:22px;
+}
+
+.dot{
+	width:14px;
+	height:14px;
+	border-radius:50%;
+}
+
+.red{
+	background:var(--red);
+}
+
+.green{
+	background:var(--green);
+}
+
+/* ====================
+   BUTTONS
+==================== */
+
+.btn{
+	width:100%;
+	padding:12px;
+	border:none;
+	margin-top:8px;
+	border-radius:10px;
+	cursor:pointer;
+}
+
+.save{
+	background:var(--red);
+	color:#fff;
+}
+
+.cancel{
+	background:#374151;
+	color:#fff;
+}
+
+/* ====================
+   FORM CONTROLS
+==================== */
+
+input,
+select{
+	width:100%;
+	padding:10px;
+	margin:6px 0;
+	background:#0d1117;
+	color:#fff;
+	border:1px solid #333;
+	border-radius:8px;
+}
+
+/* ====================
+   MODALS
+==================== */
+
+.modal{
+	display:none;
+	position:fixed;
+	inset:0;
+	background:#000a;
+	z-index:1000;
+}
+
+.content{
+	background:#161b22;
+	width:90%;
+	max-width:400px;
+	margin:10% auto;
+	padding:20px;
+	border-radius:18px;
+}
+
+/* ====================
+   BOTTOM NAV
+==================== */
+
+.navwrap{
+	position:fixed;
+	bottom:8px;
+	left:50%;
+	transform:translateX(-50%);
+	width:92%;
+	max-width:440px;
+	z-index:500;
+}
+
+.nav{
+	background:#131b29;
+	border-radius:32px;
+	padding:14px 10px;
+	display:flex;
+	justify-content:space-between;
+}
+
+.nav a{
+	text-decoration:none;
+	color:var(--muted);
+	text-align:center;
+	font-size:.75rem;
+	width:20%;
+}
+
+.active{
+	color:#fff;
+	font-weight:700;
+}
+
+/* ====================
+   QUICK ENTRY (+)
+==================== */
+
+.fab{
+	position:absolute;
+	left:50%;
+	top:-18px;
+	transform:translateX(-50%);
+	width:64px;
+	height:64px;
+	border-radius:50%;
+	background:var(--red);
+	border:6px solid #131b29;
+	color:#fff;
+	font-size:34px;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	cursor:pointer;
+}

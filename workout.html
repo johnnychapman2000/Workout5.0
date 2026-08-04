@@ -1,81 +1,20 @@
-<!DOCTYPE html><html><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 
+	<title>Workout</title>
 
-<title>Workout v14</title>
-
-<style>:root{--bg:#08111f;--red:#ff5757;--green:#22c55e;--muted:#9fb0c7;--border:#283447}body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:#fff;max-width:480px;margin:auto;padding:14px 14px 120px}.hero{background:linear-gradient(135deg,#1b2231,#311517);border:1px solid #c33;border-radius:24px;padding:18px}.title{text-align:center;font-size:2rem;font-weight:700}.ring{width:110px;height:110px;border-radius:50%;margin:12px auto;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700}.prog{text-align:center;color:var(--muted)}.section{margin:14px 4px;color:var(--muted)}.row{display:grid;grid-template-columns:1fr 80px 24px;align-items:center;background:linear-gradient(180deg,#131f31,#101827);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:7px;cursor:pointer}.target{text-align:right;padding-right:22px}.dot{width:14px;height:14px;border-radius:50%}.red{background:#ff5757}.green{background:#22c55e}
-
-.navwrap{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);width:92%;max-width:440px}
-
-.nav{background:#131b29;border-radius:32px;padding:14px 10px;display:flex;justify-content:space-between}
-.nav a{text-decoration:none;color:#9fb0c7;text-align:center;font-size:.75rem;width:20%}
-.active{color:#fff;font-weight:700}
-
-.fab {
-  position: absolute;
-  left: 50%;
-  top: -18px;
-  transform: translateX(-50%);
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: #ff5757;
-  border: 6px solid #131b29;
-  color: #fff;
-  font-size: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #000a;
-}
-
-.content {
-  background: #161b22;
-  width: 90%;
-  max-width: 400px;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 18px;
-}
-
-input,
-select {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0;
-  background: #0d1117;
-  color: #fff;
-  border: 1px solid #333;
-}
-
-.btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  margin-top: 8px;
-}
-
-.save {
-  background: #ff5757;
-  color: #fff;
-}
-
-.cancel {
-  background: #374151;
-  color: #fff;
-}
-</style>
+	<link rel="stylesheet" href="styles.css">
+	<script src="api.js"></script>
+	<script src="navigation.js"></script>
+	
 </head>
+
 <body>
-<div class='hero'><div id='title' class='title'>Loading...</div><div id='ring' class='ring'>0%</div><div id='prog' class='prog'></div></div><div id='list'></div><div id='workoutModal' class='modal'><div class='content'><h3 id='ename'></h3><input id='sets' placeholder='Sets'><input id='reps' placeholder='Reps'><input id='weight' placeholder='Weight'>
+<div class='hero'><div id='title' class='title'>Loading...</div><div id='ring' class='ring'>0%</div><div id='prog' class='prog'></div></div><div id='list'></div>
+<div id='workoutModal' class='modal'><div class='content'><h3 id='ename'></h3><input id='sets' placeholder='Sets'><input id='reps' placeholder='Reps'><input id='weight' placeholder='Weight'>
 
 <button id='saveBtn' class='btn save' onclick='saveExercise()'>Save Workout</button><button class='btn cancel' onclick='closeWorkout()'>Cancel</button></div></div>
 
@@ -108,14 +47,9 @@ select {
   </div>
 </div>
 
-<div class='navwrap'>
+<div id="navigation"></div>
 
-<div class='fab' onclick='quickModal.style.display="block";loadQuickExercises();'>
-
-+</div><div class='nav'><a href='index.html'>🏠<br>Home</a><a href='history.html'>📜<br>History</a><span style='width:20%'></span><a href='stats.html'>📊<br>Stats</a><a class='active' href='workout.html'>💪<br>Workout</a></div></div><script>
-
-
-const API='https://script.google.com/macros/s/AKfycbxotl_aVh8jQGGq1DoXYf_4L7wyhIVyen1cX9TXjK_3bw8nmUh1hIbb_GpA9_Yd0ypB/exec';
+<script>
 
 
 let CW,CE,saving=false,EXERCISES=[],HISTORY=[];
@@ -125,38 +59,38 @@ async function init(){try{
 const w=await(await fetch(API+'?action=getCurrentWorkoutDetails')).json();
 
 
-console.log(API+'?action=getWorkoutProgress');
 const p=await(await fetch(API+'?action=getWorkoutProgress')).json();
-console.log('WorkoutProgress OK');
 
 
-const response=await fetch(API+'?action=getTodaySteps');
+const steps=await(
+	await fetch(API+'?action=getTodaySteps')
+).json();
 
-const text=await response.text();
-
-console.log(text);
-
-const steps=JSON.parse(text);
-
-
-//const historyResponse=await fetch(API+'?action=getWorkoutHistory');
 
 CW=w;
 
-//EXERCISES=await(await fetch(API+'?action=getExerciseMaster')).json();
-
-
-
-console.log('ExerciseMaster OK');
-
-console.log('Exercise OK');
-
-window.EXERCISES=await(
+EXERCISES=await(
   await fetch(API+'?action=getExerciseMaster')
 ).json();
 
-title.innerText=w.PlanName;let pct=p.PercentComplete||0;ring.innerText=pct+'%';ring.style.background='conic-gradient(#ff5757 '+(pct*3.6)+'deg,#223a58 0)';prog.innerText=p.CompletedExercises+' / '+p.TotalExercises+' Complete';let done=p.CompletedExerciseIDs||[];
+title.innerText=w.PlanName;
 
+let pct=p.PercentComplete||0;
+
+ring.innerText=pct+'%';
+
+ring.style.background=
+	'conic-gradient(#ff5757 '+
+	(pct*3.6)+
+	'deg,#223a58 0)';
+
+prog.innerText=
+	p.CompletedExercises+
+	' / '+
+	p.TotalExercises+
+	' Complete';
+
+let done=p.CompletedExerciseIDs||[];
 let h='<div class=section>Remaining</div>';
 
 if(!steps.completed){
@@ -185,6 +119,10 @@ catch(e){
     '</div>';
 }
 
+}
+
+function getToday(){
+	return new Date().toISOString().split('T')[0];
 }
 
 function row(e,c){
@@ -249,7 +187,19 @@ function openEx(id){
   	workoutModal.style.display='block';
 	}
 
-function closeWorkout(){workoutModal.style.display='none';sets.placeholder='Sets';reps.style.display='block';weight.style.display='block';weight.placeholder='Weight';}async function saveExercise(){
+function closeWorkout(){
+
+	workoutModal.style.display='none';
+
+	sets.placeholder='Sets';
+
+	reps.style.display='block';
+
+	weight.style.display='block';
+	weight.placeholder='Weight';
+}
+
+async function saveExercise(){
 
   if(saving) return;
 
@@ -260,7 +210,7 @@ function closeWorkout(){workoutModal.style.display='none';sets.placeholder='Sets
 
   const payload={
     action:'saveWorkoutLog',
-    WorkoutDate:new Date().toISOString().split('T')[0],
+    WorkoutDate:getToday(),
     PlanName:CW.PlanName,
     WorkoutArea:CE?CE.WorkoutArea:'Steps',
     ExerciseID:CE?CE.ExerciseID:'Steps',
@@ -312,6 +262,13 @@ function loadQuickExercises(){
     });
 
   quickExerciseChanged();
+}
+
+function openQuickEntry(){
+
+	quickModal.style.display='block';
+
+	loadQuickExercises();
 }
 
 function quickExerciseChanged(){
@@ -370,7 +327,7 @@ async function saveQuickEntry(){
 
   let payload={
     action:'saveWorkoutLog',
-    WorkoutDate:new Date().toISOString().split('T')[0],
+    WorkoutDate:getToday(),
     PlanName:CW.PlanName,
     WorkoutArea:ex.WorkoutArea,
     ExerciseID:ex.ExerciseID,
@@ -416,6 +373,9 @@ async function saveQuickEntry(){
     alert('Save Failed');
   }
 }
+
+document.getElementById('navigation').innerHTML =
+	buildNavigation('workout');
 
 
 init();

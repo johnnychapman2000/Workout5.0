@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 
+	<title>Stats</title>
 
-<title>Stats</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<script src="api.js"></script>
+	<script src="navigation.js"></script>
+	
+</head>
 
 <style>
-:root {
-  --bg: #0D1117;
-  --card: #161B22;
-  --red: #B22222;
-  --red2: #ef4444;
-  --text: #F8FAFC;
-  --muted: #94A3B8;
-  --border: #2D333B;
-}
+
 
 * {
   box-sizing: border-box;
@@ -165,14 +161,27 @@ body {
   </button>
 </div>
 
-<div class="hero"><div class="label">Total Volume</div><div id="tv" class="value">0 lbs</div></div><div class="card"><div class="label">Exercises Logged</div><div id="ec" class="value">0</div></div><div class="card"><div class="label">Workout Days</div><div id="wd" class="value">0</div></div><div class="card"><div class="label">Average Volume</div><div id="av" class="value">0 lbs</div></div><div class="card"><div class="label">Top Exercise</div><div id="te" class="small">None</div></div>
+<div class="hero"><div class="label">Total Volume</div><div id="tv" class="value">0 lbs</div></div><div class="card"><div class="label">Exercises Logged</div><div id="ec" class="value">0</div></div>
 
+<div class="card">
+	<div class="label">Workout Days</div>
+	<div id="wd" class="value">0</div><
+/div>
 
+<div class="card">
+	<div class="label">Average Volume</div>
+	<div id="av" class="value">0 lbs</div>
+</div>
+
+<div class="card">
+	<div class="label">Top Exercise</div>
+	<div id="te" class="small">None</div>
+</div>
+
+	<div id="navigation"></div>
 
 <script>
 
-const API =
-  'https://script.google.com/macros/s/AKfycbxotl_aVh8jQGGq1DoXYf_4L7wyhIVyen1cX9TXjK_3bw8nmUh1hIbb_GpA9_Yd0ypB/exec';
 
 let all = [];
 
@@ -274,17 +283,14 @@ function render(period) {
     ' lbs)';
 }
 
+	document.getElementById('navigation').innerHTML =
+		buildNavigation('history');
+
+	loadRecent();
+
+
+
 init();
 </script>
-
-<div class='navwrap'>
-
-<div class='fab' onclick='quickModal.style.display="block";loadQuickExercises();'>
-
-+</div><div class='nav'><a href='index.html'>🏠<br>Home</a><a href='history.html'>📜<br>History</a><span style='width:20%'></span>
-
-<a class='active' href='stats.html'>📊<br>Stats</a>
-<a href='workout.html'>💪<br>Workout</a></div></div>
-
 </body>
 </html>

@@ -1,21 +1,139 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>History</title>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>:root{--bg:#0D1117;--card:#161B22;--red:#B22222;--text:#F8FAFC;--muted:#94A3B8;--border:#2D333B}body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;max-width:480px;margin:auto;padding:20px 20px 90px}*{box-sizing:border-box}.title{text-align:center;font-size:2rem;font-weight:700;margin-bottom:15px}.tabs{display:flex;gap:8px;margin-bottom:15px}.btn{flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:#fff}.active{background:var(--red)}.card{background:linear-gradient(180deg,#161B22,#111827);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.row{display:flex;justify-content:space-between}.name{font-weight:700}.muted{color:var(--muted);font-size:.9rem}.nav{position:fixed;bottom:0;width:100%;max-width:480px;left:auto;background:#111827;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:12px 0}.nav a{color:#94A3B8;text-decoration:none;font-size:.8rem;text-align:center}.activeNav{color:#B22222!important}</style></head><body><div class="title">History</div><div class="tabs"><button id="r" class="btn active" onclick="loadRecent()">Recent</button><button id="d" class="btn" onclick="loadDaily()">Daily</button><button id="v" class="btn" onclick="loadVolume()">Volume</button></div><div id="content"></div><div class="nav"><a href="index.html">🏠<br>Home</a><a href="history.html" class="activeNav">📜<br>History</a><a href="stats.html">📊<br>Stats</a><a href="workout.html">💪<br>Workout</a></div>
+	<title>History</title>
 
-<script>const API='https://script.google.com/macros/s/AKfycbxotl_aVh8jQGGq1DoXYf_4L7wyhIVyen1cX9TXjK_3bw8nmUh1hIbb_GpA9_Yd0ypB/exec';
+	<link rel="stylesheet" href="styles.css">
+	<script src="api.js"></script>
+	<script src="navigation.js"></script>
+	
+</head>
 
+<style>
+
+
+
+{
+	box-sizing:border-box;
+}
+
+body{
+	background:var(--bg);
+	color:var(--text);
+	font-family:Inter,sans-serif;
+	max-width:480px;
+	margin:auto;
+	padding:20px 20px 140px;
+}
+
+.title{
+	text-align:center;
+	font-size:2rem;
+	font-weight:700;
+	margin-bottom:15px;
+}
+
+.tabs{
+	display:flex;
+	gap:8px;
+	margin-bottom:15px;
+}
+
+.btn{
+	flex:1;
+	padding:12px;
+	border-radius:12px;
+	border:1px solid var(--border);
+	background:var(--card);
+	color:#fff;
+}
+
+
+.card{
+	background:linear-gradient(
+		180deg,
+		#161B22,
+		#111827
+	);
+	border:1px solid var(--border);
+	border-radius:14px;
+	padding:12px;
+	margin-bottom:10px;
+}
+
+.row{
+	display:flex;
+	justify-content:space-between;
+}
+
+.name{
+	font-weight:700;
+}
+
+.muted{
+	color:var(--muted);
+	font-size:.9rem;
+}
+
+
+</style>
+
+<body>
+
+<div class="title">
+	History
+</div>
+
+<div class="tabs">
+
+	<button
+		id="r"
+		class="btn active"
+		onclick="loadRecent()">
+		Recent
+	</button>
+
+	<button
+		id="d"
+		class="btn"
+		onclick="loadDaily()">
+		Daily
+	</button>
+
+	<button
+		id="v"
+		class="btn"
+		onclick="loadVolume()">
+		Volume
+	</button>
+
+</div>
+
+<div id="content"></div>
+
+<div id="navigation"></div>
+
+<script>
 function setA(x){r.classList.remove('active');d.classList.remove('active');v.classList.remove('active');document.getElementById(x).classList.add('active')}
 
-async function loadRecent(){setA('r');const data=await(await fetch(API+'?action=getRecentWorkouts')).json();content.innerHTML='';
+async function loadRecent(){setA('r');
+const data=await(await fetch(API+'?action=getRecentWorkouts')).json();content.innerHTML='';
 
 	data.filter(x => x.ExerciseName !== 'Steps')
     	.slice(0,10)
-    	.forEach(x=>content.innerHTML+=`
-	<div class=card><div class=row><div class=name>${x.ExerciseName||''}</div>
-	<div>✅</div>
-	</div>
+
+.forEach(x=>content.innerHTML+=`
+<div class=card>
+	<div class=name>${x.ExerciseName||''}</div>
 	<div class=muted>${String(x.WorkoutDate||'').substring(0,10)}</div>
-	<div>${x.Sets||0} × ${x.Reps||0} × ${x.Weight||0}</div></div>`)}async function loadDaily(){setA('d');const data=await(await fetch(API+'?action=getWorkoutHistory')).json();const grp={};data.forEach(x=>{const day=String(x.WorkoutDate).substring(0,10);if(!grp[day])grp[day]={count:0,vol:0};grp[day].count++;grp[day].vol+=Number(x.Volume||0)});content.innerHTML='';Object.keys(grp).sort().reverse().forEach(day=>content.innerHTML+=`<div class=card><div class=row><div class=name>${day}</div><div>${grp[day].count} exercises</div></div><div class=muted>Volume ${grp[day].vol.toLocaleString()}</div></div>`)}
+	<div>${x.Sets||0} × ${x.Reps||0} × ${x.Weight||0}</div>
+</div>`)}
+
+
+async function loadDaily(){setA('d');const data=await(await fetch(API+'?action=getWorkoutHistory')).json();const grp={};data.forEach(x=>{const day=String(x.WorkoutDate).substring(0,10);if(!grp[day])grp[day]={count:0,vol:0};grp[day].count++;grp[day].vol+=Number(x.Volume||0)});content.innerHTML='';Object.keys(grp).sort().reverse().forEach(day=>content.innerHTML+=`<div class=card><div class=row><div class=name>${day}</div><div>${grp[day].count} exercises</div></div><div class=muted>Volume ${grp[day].vol.toLocaleString()}</div></div>`)}
 
 
 
@@ -36,4 +154,11 @@ async function loadVolume(){
 </div>`);
 }
 
-loadRecent();</script></body></html>
+	document.getElementById('navigation').innerHTML =
+		buildNavigation('history');
+
+	loadRecent();
+ 
+</script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+/* ========================================
+   WORKOUT 6.0 CARD FRAMEWORK
+   ======================================== */
+
+.card {
+	background: linear-gradient(
+		180deg,
+		#161B22,
+		#111827
+	);
+
+	border: 1px solid var(--border);
+
+	border-radius: 18px;
+
+	padding: 18px;
+
+	margin-bottom: 18px;
+
+	box-shadow:
+		0 4px 12px rgba(0,0,0,.25);
+}
+
+.card.clickable {
+	cursor: pointer;
+
+	transition:
+		transform .15s ease,
+		border-color .15s ease;
+}
+
+.card.clickable:hover {
+	transform: translateY(-2px);
+
+	border-color: var(--red);
+}
+
+/* ========================================
+   HOME HERO CARD
+   ======================================== */
+
+.workout-card {
+	text-align: center;
+
+	border-color: var(--red);
+
+	box-shadow:
+		0 0 0 1px rgba(255,87,87,.65),
+		0 0 18px rgba(255,87,87,.35),
+		0 0 38px rgba(255,87,87,.18),
+		0 4px 12px rgba(0,0,0,.25);
+}
+
+
+.workout-name {
+	font-size: 2rem;
+
+	font-weight: 700;
+}
+
+.exercise-count {
+	color: var(--muted);
+}
+
+/* ========================================
+   CARD HEADERS
+   ======================================== */
+
+.card-header {
+	display: flex;
+
+	justify-content: center;
+
+	align-items: center;
+
+	margin-bottom: 14px;
+
+	text-align: center;
+}
+
+.card-title {
+	width: 100%;
+
+	font-size: 1rem;
+
+	font-weight: 700;
+
+	color: #fff;
+
+	text-align: center;
+}
+
+.card-title::after {
+	content: "";
+
+	display: block;
+
+	width: 52px;
+
+	height: 3px;
+
+	background: var(--red);
+
+	border-radius: 999px;
+
+	margin: 8px auto 0;
+
+	box-shadow:
+		0 0 10px rgba(255,87,87,.45);
+}
+
+.card-subtitle {
+	font-size: .8rem;
+
+	color: var(--muted);
+
+	text-align: center;
+}
+
+.card-footer {
+	margin-top: 12px;
+
+	font-size: .85rem;
+
+	font-weight: 600;
+
+	color: var(--red);
+
+	text-align: center;
+}
+
+/* ========================================
+   HOME DASHBOARD CARDS
+   ======================================== */
+
+.best-streak,
+.next-time {
+	color: var(--muted);
+}
+
+.streak-value,
+.volume-number {
+	font-size: 2rem;
+
+	font-weight: 700;
+}
+
+/* ========================================
+   LIST CARDS
+   Recent Activity
+   Monthly Improvement
+   ======================================== */
+
+.card-list {
+	display: flex;
+
+	flex-direction: column;
+
+	gap: 10px;
+}
+
+.card-row {
+	display: flex;
+
+	justify-content: space-between;
+
+	align-items: center;
+}
+
+.card-row-label {
+	color: #fff;
+
+	font-weight: 500;
+}
+
+.card-row-label::before {
+	content: "";
+
+	display: inline-block;
+
+	width: 6px;
+
+	height: 6px;
+
+	background: var(--red);
+
+	border-radius: 50%;
+
+	margin-right: 8px;
+
+	vertical-align: middle;
+}
+
+.card-row-value {
+	color: var(--muted);
+
+	font-size: .85rem;
+}
+
+/* ========================================
+   MUSCLE GROUP CARD
+   ======================================== */
+
+.group {
+	margin-bottom: 12px;
+}
+
+.group:last-child {
+	margin-bottom: 0;
+}
+
+.group-label {
+	display: flex;
+
+	justify-content: space-between;
+
+	align-items: center;
+
+	margin-bottom: 5px;
+
+	font-size: .9rem;
+
+	color: #fff;
+}
+
+.group-bar {
+	height: 8px;
+
+	background: rgba(255,255,255,.08);
+
+	border-radius: 999px;
+
+	overflow: hidden;
+}
+
+.group-fill {
+	height: 100%;
+
+	background: var(--red);
+
+	border-radius: 999px;
+
+	transition: width .8s ease;
+}
+
+/* ========================================
+   KPI CARD
+   ======================================== */
+
+.kpi {
+	text-align: center;
+}
+
+.kpi-value {
+	font-size: 2rem;
+
+	font-weight: 700;
+
+	color: #fff;
+}
+
+.kpi-label {
+	font-size: .85rem;
+
+	color: var(--muted);
+}
+
+/* ========================================
+   STATUS COLORS
+   ======================================== */
+
+.status-good {
+	color: #22c55e;
+}
+
+.status-warning {
+	color: #facc15;
+}
+
+.status-danger {
+	color: #ef4444;
+}

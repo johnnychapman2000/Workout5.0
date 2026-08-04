@@ -7,132 +7,124 @@
 	<title>Home</title>
 
 	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="cards.css">
 	<script src="api.js"></script>
 	<script src="navigation.js"></script>
 	
 <style>
-
-
-
-.container{
-	padding:20px
-}
-
-.page-title{
-	text-align:center;
-	font-size:1.8rem;
-	font-weight:700;
-	margin-bottom:20px
-}
-
-.card{
-	background:linear-gradient(180deg,#161B22,#111827);
-	border:1px solid var(--border);
-	border-radius:18px;
-	padding:18px;
-	margin-bottom:18px
-}
-
-.workout-card{
-	text-align:center;
-	border-color:#B22222
-}
-
-.workout-name{
-	font-size:2rem;
-	font-weight:700
-}
-
-.exercise-count,
-.best-streak,
-.next-time{
-	color:var(--muted)
-}
-
-.btn-primary{
-	width:100%;
-	background:#B22222;
-	color:#fff;
-	border:none;
-	border-radius:12px;
-	padding:14px;
-	font-weight:700;
-	margin-top:16px;
-	cursor:pointer
-}
-
-.streak-value,
-.volume-number{
-	font-size:2rem;
-	font-weight:700
-}
-
-
-
 </style>
 </head>
 
 <body>
 
-<div class="container">
+	<h1 class="page-title">Dashboard</h1>
 
-	<h1 class="page-title">
-		Workout 5.0
-	</h1>
-
-		<div class="card workout-card">
-
-		<div id="workoutName" class="workout-name">
-			Loading...
-		</div>
-
-		<div id="exerciseCount" class="exercise-count">
-			Loading...
-		</div>
-
+	<div class="card workout-card">
+		<div id="workoutName" class="workout-name">Loading...</div>
+		<div id="exerciseCount" class="exercise-count">Loading...</div>
 		<button class="btn-primary" onclick="location.href='workout.html'">START WORKOUT</button>
-		</div>
-
-		<div class="card">
-			<div>Current Streak</div><div id="streak" class="streak-value">🔥 0 Days</div>
-			<div class="best-streak">Based on workout history</div>
-		</div>
-
+	</div>
 	<div class="card">
 
-		<div>Next Workout</div>
-
-		<div
-			id="nextWorkout"
-			style="font-size:1.2rem;font-weight:700;margin-top:8px">
-			Loading...
+		<div class="card-header">
+			<div class="card-title">
+				Current Streak
+			</div>
 		</div>
 
-		<div class="next-time">
-			Up Next
+		<div class="kpi">
+
+			<div id="streak" class="kpi-value">
+				🔥 0 Days
+			</div>
+
+			<div class="kpi-label">
+				Based on workout history
+			</div>
+
 		</div>
 
 	</div>
 
 	<div class="card">
 
-		<div>Monthly Volume</div>
-
-		<div id="monthVolume" class="volume-number">
-			0 lbs
+		<div class="card-header">
+			<div class="card-title">
+				Next Workout
+			</div>
 		</div>
 
-		<div id="monthCount">
-			0 Exercises Logged
+		<div class="kpi">
+
+			<div
+				id="nextWorkout"
+				class="kpi-value">
+				Loading...
+			</div>
+
+			<div class="kpi-label">
+				Up Next
+			</div>
+
 		</div>
 
 	</div>
 
-</div>
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				Monthly Volume
+			</div>
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="monthVolume"
+				class="kpi-value">
+				0 lbs
+			</div>
+
+			<div
+				id="monthCount"
+				class="kpi-label">
+				0 Exercises Logged
+			</div>
+
+		</div>
+
+	</div>
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				Recent Activity
+			</div>
+		</div>
+
+		<div id="recentActivity" class="card-list"></div>
+	</div>
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				Top Muscle Groups by Volume
+			</div>
+		</div>
+
+		<div id="topMuscleGroups"></div>
+
+	</div>
+
+
 
 	<div id="navigation"></div>
 
 <script>
+
+
 
 async function init(){
 
@@ -162,19 +154,15 @@ async function init(){
 		await (
 			await fetch(API+'?action=getWorkoutHistory')
 		).json();
-
 	let vol=0;
-
 	hist.forEach(x=>{
 		vol+=Number(x.Volume||0);
 	});
 
-	monthVolume.innerText=
-		vol.toLocaleString()+' lbs';
-
-	monthCount.innerText=
-		hist.length+' Exercises Logged';
-
+	monthVolume.innerText=vol.toLocaleString()+' lbs';
+	monthCount.innerText=hist.length+' Exercises Logged';
+	renderTopMuscleGroups(hist);
+	renderRecentActivity(hist);
 	const dates=[
 		...new Set(
 			hist
@@ -190,7 +178,140 @@ async function init(){
 		(dates.length===1?'':'s');
 }
 
-	document.getElementById('navigation').innerHTML = buildNavigation('home');
+function renderTopMuscleGroups(history){
+
+	const groups={};
+
+	history.forEach(x=>{
+
+		const area=x.WorkoutArea||'Other';
+
+		if(!groups[area]){
+			groups[area]=0;
+		}
+
+		groups[area]+=Number(x.Volume||0);
+	});
+
+	const sorted=
+		Object.keys(groups)
+			.map(name=>({
+				name:name,
+				volume:groups[name]
+			}))
+			.sort((a,b)=>b.volume-a.volume)
+			.slice(0,4);
+
+	if(!sorted.length){
+		topMuscleGroups.innerHTML=
+			'<div class="card-row-value">No data yet</div>';
+		return;
+	}
+
+	const max=sorted[0].volume;
+
+	let html='';
+
+	sorted.forEach(x=>{
+
+		const pct=max
+			? Math.round((x.volume/max)*100)
+			: 0;
+
+		html+=`
+			<div class="group">
+
+				<div class="group-label">
+					<span>${x.name}</span>
+					<span>${x.volume.toLocaleString()}</span>
+				</div>
+
+				<div class="group-bar">
+					<div
+						class="group-fill"
+						style="width:${pct}%">
+					</div>
+				</div>
+
+			</div>`;
+	});
+
+	topMuscleGroups.innerHTML=html;
+}
+
+function renderRecentActivity(history){
+
+	const recent=
+		history
+			.filter(x=>x.ExerciseName)
+			.slice(0,5);
+
+	if(!recent.length){
+		recentActivity.innerHTML=
+			'<div class="card-row-value">No recent activity</div>';
+
+		return;
+	}
+
+	let html='';
+
+	recent.forEach(x=>{
+
+		const dateText=
+			formatRecentDate(
+				String(x.WorkoutDate).substring(0,10)
+			);
+
+		html+=`
+			<div class="card-row">
+
+				<div class="card-row-label">
+					${x.ExerciseName}
+				</div>
+
+				<div class="card-row-value">
+					${dateText}
+				</div>
+
+			</div>`;
+	});
+
+	recentActivity.innerHTML=html;
+}
+
+function formatRecentDate(dateValue){
+
+	const today=new Date();
+
+	const todayText=
+		today.getFullYear()+
+		'-'+
+		String(today.getMonth()+1).padStart(2,'0')+
+		'-'+
+		String(today.getDate()).padStart(2,'0');
+
+	const yesterday=new Date();
+	yesterday.setDate(yesterday.getDate()-1);
+
+	const yesterdayText=
+		yesterday.getFullYear()+
+		'-'+
+		String(yesterday.getMonth()+1).padStart(2,'0')+
+		'-'+
+		String(yesterday.getDate()).padStart(2,'0');
+
+	if(dateValue===todayText){
+		return 'Today';
+	}
+
+	if(dateValue===yesterdayText){
+		return 'Yesterday';
+	}
+
+	return dateValue;
+}
+
+document.getElementById('navigation').innerHTML = buildNavigation('home');
 
 init();
 </script>

@@ -29,13 +29,54 @@ body{
 	font-weight:700;
 }
 
+.page-title{
+	text-align:center;
+
+	font-size:2.15rem;
+
+	font-weight:900;
+
+	letter-spacing:.8px;
+
+	margin:8px 0 24px;
+
+	color:#fff;
+
+	text-shadow:
+		0 0 4px rgba(255,255,255,.85),
+		0 0 10px rgba(255,87,87,.65),
+		0 0 24px rgba(255,87,87,.35);
+
+	position:relative;
+}
+
+.page-title::after{
+	content:"";
+
+	display:block;
+
+	width:72px;
+
+	height:4px;
+
+	background:var(--red);
+
+	border-radius:999px;
+
+	margin:10px auto 0;
+
+	box-shadow:
+		0 0 12px rgba(255,87,87,.75),
+		0 0 22px rgba(255,87,87,.35);
+}
+
 .section{
 	margin:14px 4px;
 	color:var(--muted);
 }
 
 /* ====================
-   HERO
+   HERO / WORKOUT PAGE
 ==================== */
 
 .hero{
@@ -63,7 +104,7 @@ body{
 }
 
 /* ====================
-   CARDS / ROWS
+   WORKOUT ROWS
 ==================== */
 
 .row{
@@ -111,6 +152,18 @@ body{
 	border:none;
 	margin-top:8px;
 	border-radius:10px;
+	cursor:pointer;
+}
+
+.btn-primary{
+	width:100%;
+	background:#B22222;
+	color:#fff;
+	border:none;
+	border-radius:12px;
+	padding:14px;
+	font-weight:700;
+	margin-top:16px;
 	cursor:pointer;
 }
 
@@ -188,6 +241,11 @@ select{
 	text-align:center;
 	font-size:.75rem;
 	width:20%;
+}
+
+.nav a.active{
+	color:#fff;
+	font-weight:700;
 }
 
 .active{

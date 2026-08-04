@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<title>Home</title>
+
+	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="cards.css">
+	<script src="api.js"></script>
+	<script src="navigation.js"></script>
+	
+<style>
+
+
+
+.container{
+	padding:20px
+}
+
+.page-title{
+	text-align:center;
+	font-size:1.8rem;
+	font-weight:700;
+	margin-bottom:20px
+}
+
+.btn-primary{
+	width:100%;
+	background:#B22222;
+	color:#fff;
+	border:none;
+	border-radius:12px;
+	padding:14px;
+	font-weight:700;
+	margin-top:16px;
+	cursor:pointer
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+	<h1 class="page-title">
+		Workout 5.0
+	</h1>
+
+	<div class="card workout-card">
+		<div id="workoutName" class="workout-name">Loading...</div>
+		<div id="exerciseCount" class="exercise-count">Loading...</div>
+		<button class="btn-primary" onclick="location.href='workout.html'">START WORKOUT</button>
+	</div>
+</div>
+
+	<div id="navigation"></div>
+
+<script>
+
+async function init(){
+
+	const w=
+		await (
+			await fetch(API+'?action=getCurrentWorkout')
+		).json();
+
+	workoutName.innerText=w.PlanName;
+
+	exerciseCount.innerText=
+		w.ExerciseCount+' Exercises';
+
+	const plans=
+		await (
+			await fetch(API+'?action=getWorkoutPlans')
+		).json();
+
+	const next=
+		plans.find(
+			p=>Number(p.PlanID)===Number(w.PlanID)+1
+		) || plans[0];
+
+	nextWorkout.innerText=next.PlanName;
+
+	const hist=
+		await (
+			await fetch(API+'?action=getWorkoutHistory')
+		).json();
+
+	let vol=0;
+
+	hist.forEach(x=>{
+		vol+=Number(x.Volume||0);
+	});
+
+	monthVolume.innerText=
+		vol.toLocaleString()+' lbs';
+
+	monthCount.innerText=
+		hist.length+' Exercises Logged';
+
+	const dates=[
+		...new Set(
+			hist
+				.map(x=>String(x.WorkoutDate).substring(0,10))
+				.filter(Boolean)
+		)
+	];
+
+	streak.innerText=
+		'🔥 '+
+		dates.length+
+		' Day'+
+		(dates.length===1?'':'s');
+}
+
+	document.getElementById('navigation').innerHTML = buildNavigation('home');
+
+init();
+</script>
+</body>
+</html>

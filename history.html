@@ -6,86 +6,19 @@
 
 	<title>History</title>
 
-	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="styles.css?v=1">
+	<link rel="stylesheet" href="cards.css?v=1">
+	<link rel="stylesheet" href="pages.css?v=1">
 	<script src="api.js"></script>
 	<script src="navigation.js"></script>
-	
+
 </head>
-
-<style>
-
-
-
-{
-	box-sizing:border-box;
-}
-
-body{
-	background:var(--bg);
-	color:var(--text);
-	font-family:Inter,sans-serif;
-	max-width:480px;
-	margin:auto;
-	padding:20px 20px 140px;
-}
-
-.title{
-	text-align:center;
-	font-size:2rem;
-	font-weight:700;
-	margin-bottom:15px;
-}
-
-.tabs{
-	display:flex;
-	gap:8px;
-	margin-bottom:15px;
-}
-
-.btn{
-	flex:1;
-	padding:12px;
-	border-radius:12px;
-	border:1px solid var(--border);
-	background:var(--card);
-	color:#fff;
-}
-
-
-.card{
-	background:linear-gradient(
-		180deg,
-		#161B22,
-		#111827
-	);
-	border:1px solid var(--border);
-	border-radius:14px;
-	padding:12px;
-	margin-bottom:10px;
-}
-
-.row{
-	display:flex;
-	justify-content:space-between;
-}
-
-.name{
-	font-weight:700;
-}
-
-.muted{
-	color:var(--muted);
-	font-size:.9rem;
-}
-
-
-</style>
 
 <body>
 
-<div class="title">
+<h1 class="page-title">
 	History
-</div>
+</h1>
 
 <div class="tabs">
 
@@ -126,14 +59,24 @@ const data=await(await fetch(API+'?action=getRecentWorkouts')).json();content.in
     	.slice(0,10)
 
 .forEach(x=>content.innerHTML+=`
+
 <div class=card>
-	<div class=name>${x.ExerciseName||''}</div>
-	<div class=muted>${String(x.WorkoutDate||'').substring(0,10)}</div>
+	<div class=history-name>${x.ExerciseName||''}</div>
+	<div class=history-muted>${String(x.WorkoutDate||'').substring(0,10)}</div>
 	<div>${x.Sets||0} × ${x.Reps||0} × ${x.Weight||0}</div>
 </div>`)}
 
 
-async function loadDaily(){setA('d');const data=await(await fetch(API+'?action=getWorkoutHistory')).json();const grp={};data.forEach(x=>{const day=String(x.WorkoutDate).substring(0,10);if(!grp[day])grp[day]={count:0,vol:0};grp[day].count++;grp[day].vol+=Number(x.Volume||0)});content.innerHTML='';Object.keys(grp).sort().reverse().forEach(day=>content.innerHTML+=`<div class=card><div class=row><div class=name>${day}</div><div>${grp[day].count} exercises</div></div><div class=muted>Volume ${grp[day].vol.toLocaleString()}</div></div>`)}
+async function loadDaily(){setA('d');const data=await(await fetch(API+'?action=getWorkoutHistory')).json();const grp={};data.forEach(x=>{const day=String(x.WorkoutDate).substring(0,10);if(!grp[day])grp[day]={count:0,vol:0};grp[day].count++;grp[day].vol+=Number(x.Volume||0)});content.innerHTML='';Object.keys(grp).sort().reverse().forEach(day=>content.innerHTML+=`<div class=card>
+
+	<div class=history-row>
+
+	<div class=history-name>
+
+${day}</div><div>${grp[day].count} exercises</div></div>
+
+	<div class=history-muted>
+Volume ${grp[day].vol.toLocaleString()}</div></div>`)}
 
 
 
@@ -145,13 +88,16 @@ async function loadVolume(){
 	content.innerHTML='';
 
 	filteredData.forEach(x => content.innerHTML += `
+
+
 <div class=card>
-	<div class=row>
-		<div class=name>${x.PlanName}</div>
+	<div class=history-row>
+		<div class=history-name>${x.PlanName}</div>
 		<div>${x.ExerciseCount}</div>
 	</div>
-	<div class=muted>${Number(x.TotalVolume).toLocaleString()} lbs</div>
-</div>`);
+	<div class=history-muted>${Number(x.TotalVolume).toLocaleString()} lbs</div>
+</div>
+`);
 }
 
 	document.getElementById('navigation').innerHTML =

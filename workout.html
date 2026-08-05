@@ -6,7 +6,7 @@
 
 	<title>Workout</title>
 
-	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="styles.css?v=1">
 	<script src="api.js"></script>
 	<script src="navigation.js"></script>
 	
@@ -62,12 +62,15 @@ const w=await(await fetch(API+'?action=getCurrentWorkoutDetails')).json();
 const p=await(await fetch(API+'?action=getWorkoutProgress')).json();
 
 
-const steps=await(
-	await fetch(API+'?action=getTodaySteps')
-).json();
+	const steps=await(
+		await fetch(API+'?action=getTodaySteps')
+	).json();
 
+	HISTORY=await(
+		await fetch(API+'?action=getWorkoutHistory')
+	).json();
 
-CW=w;
+	CW=w;
 
 EXERCISES=await(
   await fetch(API+'?action=getExerciseMaster')
@@ -144,7 +147,8 @@ function row(e,c){
 	if(c){
 
 		const log=HISTORY.find(x=>
-			String(x.ExerciseID)===String(e.ExerciseID)
+			String(x.ExerciseID)===String(e.ExerciseID) &&
+			String(x.PlanName).trim()===String(CW.PlanName).trim()
 		);
 
 		if(log){

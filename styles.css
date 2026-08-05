@@ -9,17 +9,21 @@
 	--text:#ffffff;
 }
 
+*{
+	box-sizing:border-box;
+}
+
 /* ====================
    GLOBAL
 ==================== */
 
 body{
-	margin:0;
+	margin:0 auto;
 	background:var(--bg);
 	font-family:Arial,sans-serif;
 	color:var(--text);
+	width:100%;
 	max-width:480px;
-	margin:auto;
 	padding:14px 14px 120px;
 }
 
@@ -219,12 +223,13 @@ select{
 
 .navwrap{
 	position:fixed;
-	bottom:8px;
 	left:50%;
+	bottom:8px;
 	transform:translateX(-50%);
 	width:92%;
 	max-width:440px;
 	z-index:500;
+	box-sizing:border-box;
 }
 
 .nav{

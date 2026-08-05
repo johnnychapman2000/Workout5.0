@@ -1,0 +1,73 @@
+/* ========================================
+   PAGE CONTROLS
+   Tabs / Filters
+   ======================================== */
+
+.tabs,
+.filters{
+	display:flex;
+	gap:8px;
+	margin-bottom:15px;
+}
+
+.tabs .btn,
+.filters .btn{
+	width:auto;
+	flex:1;
+	margin-top:0;
+	padding:12px;
+	border-radius:12px;
+	border:1px solid var(--border);
+	background:var(--card);
+	color:#fff;
+}
+
+.tabs .btn.active,
+.filters .btn.active{
+	background:var(--red);
+	color:#fff;
+	font-weight:700;
+}
+
+
+/* ========================================
+   HISTORY PAGE
+   ======================================== */
+
+.history-row{
+	display:flex;
+	justify-content:space-between;
+}
+
+.history-name{
+	font-weight:700;
+}
+
+.history-muted{
+	color:var(--muted);
+	font-size:.9rem;
+}
+
+
+/* ========================================
+   STATS PAGE
+   ======================================== */
+
+.stat-label{
+	color:var(--muted);
+	text-align:center;
+}
+
+.stat-value{
+	font-size:2rem;
+	font-weight:700;
+	margin-top:8px;
+	text-align:center;
+}
+
+.stat-small{
+	font-size:1.3rem;
+	font-weight:700;
+	margin-top:8px;
+	text-align:center;
+}

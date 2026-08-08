@@ -85,6 +85,10 @@ function closeHistoryDetail(){
 	).style.display = 'none';
 }
 
+/* ========================================
+   GET RECENT HISTORY
+   ======================================== */
+
 async function loadRecent(){
 
 	setA('r');
@@ -92,49 +96,59 @@ async function loadRecent(){
 	const data =
 		await (
 			await fetch(
-				API+'?action=getRecentWorkouts'
+				API +
+				'?action=getRecentWorkouts' +
+				'&user=' +
+				getUserCode() +
+				'&t=' +
+				Date.now()
 			)
 		).json();
 
 	content.innerHTML='';
 
 	HISTORY_ITEMS =
-	data
-		.filter(
-			x => x.ExerciseName !== 'Steps'
-		)
-		.slice(0,10);
+		data
+			.filter(
+				x => x.ExerciseName !== 'Steps'
+			)
+			.slice(0,10);
 
-	data
-		HISTORY_ITEMS.forEach((x,index) => {
+	HISTORY_ITEMS.forEach((x,index) => {
 
-			content.innerHTML += `
-				<div
-					class="history-activity"
-					onclick="openHistoryDetail(HISTORY_ITEMS[${index}])">
+		content.innerHTML += `
+			<div
+				class="history-activity"
+				onclick="openHistoryDetail(HISTORY_ITEMS[${index}])">
 
-					<div class="activity-name">
-						${x.ExerciseName || ''}
-					</div>
-
-					<div class="activity-result">
-						${
-							x.Weight
-								? `${x.Sets||0}×${x.Reps||0}×${x.Weight}`
-								: `${x.Sets||0}×${x.Reps||0}`
-						}
-					</div>
-
-					<div class="activity-date">
-						${String(x.WorkoutDate || '')
-							.substring(5,10)}
-					</div>
-
+				<div class="activity-name">
+					${x.ExerciseName || ''}
 				</div>
-			`;
 
-		});
-	}
+				<div class="activity-result">
+					${
+						x.Weight
+							? `${x.Sets||0}×${x.Reps||0}×${x.Weight}`
+							: `${x.Sets||0}×${x.Reps||0}`
+					}
+				</div>
+
+				<div class="activity-date">
+					${new Date(x.WorkoutDate)
+						.toLocaleDateString(
+							'en-US',
+							{
+								month:'short',
+								day:'2-digit'
+							}
+						)}
+				</div>
+
+			</div>
+		`;
+
+	});
+}
 
 async function loadDaily(){
 
@@ -142,8 +156,7 @@ async function loadDaily(){
 
 	const data =
 		await (
-			await fetch(
-				API+'?action=getWorkoutHistory'
+			await fetch(API+'?action=getWorkoutHistory&user='+getUserCode()
 			)
 		).json();
 
@@ -206,8 +219,7 @@ async function loadVolume(){
 
 	const data =
 		await (
-			await fetch(
-				API+'?action=getVolumeHistory'
+			await fetch(API+'?action=getVolumeHistory&user='+getUserCode()
 			)
 		).json();
 

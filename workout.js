@@ -9,16 +9,34 @@ async function init(){try{
 const w=await(await fetch(API+'?action=getCurrentWorkoutDetails')).json();
 
 
-const p=await(await fetch(API+'?action=getWorkoutProgress')).json();
+const p=await(
+	await fetch(
+		API+
+		'?action=getWorkoutProgress'+
+		'&user='+
+		getUserCode()
+	)
+).json();
 
 
-	const steps=await(
-		await fetch(API+'?action=getTodaySteps')
-	).json();
+const steps=await(
+	await fetch(
+		API+
+		'?action=getTodaySteps'+
+		'&user='+
+		getUserCode()
+	)
+).json();
 
-	HISTORY=await(
-		await fetch(API+'?action=getWorkoutHistory')
-	).json();
+HISTORY=await(
+	await fetch(
+		API+
+		'?action=getWorkoutHistory'+
+		'&user='+
+		getUserCode()
+	)
+).json();
+
 
 	CW=w;
 

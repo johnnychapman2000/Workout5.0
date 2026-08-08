@@ -13,11 +13,14 @@ async function initializeStats(){
 	document.getElementById('navigation').innerHTML =
 		buildNavigation('stats');
 
-	all = await (
-		await fetch(
-			API + '?action=getWorkoutHistory'
-		)
-	).json();
+all = await (
+	await fetch(
+		API +
+		'?action=getWorkoutHistory' +
+		'&user=' +
+		getUserCode()
+	)
+).json();
 
 	render('daily');
 }

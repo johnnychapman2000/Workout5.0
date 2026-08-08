@@ -3,24 +3,19 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-
 	<title>Home</title>
-
 	<link rel="stylesheet" href="styles.css?v=1">
 	<link rel="stylesheet" href="cards.css?v=1">
 	<script src="api.js"></script>
 	<script src="navigation.js"></script>
-	
+
 </head>
-
 <body>
-
 	<h1 class="page-title">Dashboard</h1>
-
 	<div class="card workout-card">
 		<div id="workoutName" class="workout-name">Loading...</div>
 		<div id="exerciseCount" class="exercise-count">Loading...</div>
-		<button class="btn-primary" onclick="location.href='workout.html'">START WORKOUT</button>
+		<button class="btn-primary" onclick="location.href=buildProfileUrl('workout.html')">START WORKOUT</button>
 	</div>
 	<div class="card">
 
@@ -29,21 +24,16 @@
 				Current Streak
 			</div>
 		</div>
-
 		<div class="kpi">
 
 			<div id="streak" class="kpi-value">
 				🔥 0 Days
 			</div>
-
 			<div class="kpi-label">
 				Based on workout history
 			</div>
-
 		</div>
-
 	</div>
-
 	<div class="card">
 
 		<div class="card-header">
@@ -51,9 +41,7 @@
 				Next Workout
 			</div>
 		</div>
-
 		<div class="kpi">
-
 			<div
 				id="nextWorkout"
 				class="kpi-value">
@@ -116,202 +104,46 @@
 
 	</div>
 
+<div id='quickModal' class='modal'>
+	<div class='content'>
+		<h3>Quick Entry</h3>
 
+		<select id='area' onchange='loadQuickExercises()'>
+			<option>Abs</option>
+			<option>Back</option>
+			<option>Biceps</option>
+			<option>Body</option>
+			<option>Cardio</option>
+			<option>Chest</option>
+			<option>Legs</option>
+			<option>Shoulders</option>
+			<option>Stretching</option>
+			<option>Triceps</option>
+		</select>
+
+		<select id='quickExercise'
+			onchange='quickExerciseChanged()'>
+		</select>
+
+		<div id='quickFields'></div>
+
+		<button class='btn save'
+			onclick='saveQuickEntry()'>
+			Save
+		</button>
+
+		<button class='btn cancel'
+			onclick='quickModal.style.display="none"'>
+			Cancel
+		</button>
+	</div>
+</div>
 
 	<div id="navigation"></div>
 
-<script>
+<script src="profile.js"></script>
+<script src="home.js"></script>
+<script src="quickEntry.js"></script>
 
-
-
-async function init(){
-
-	const w=
-		await (
-			await fetch(API+'?action=getCurrentWorkout')
-		).json();
-
-	workoutName.innerText=w.PlanName;
-
-	exerciseCount.innerText=
-		w.ExerciseCount+' Exercises';
-
-	const plans=
-		await (
-			await fetch(API+'?action=getWorkoutPlans')
-		).json();
-
-	const next=
-		plans.find(
-			p=>Number(p.PlanID)===Number(w.PlanID)+1
-		) || plans[0];
-
-	nextWorkout.innerText=next.PlanName;
-
-	const hist=
-		await (
-			await fetch(API+'?action=getWorkoutHistory')
-		).json();
-	let vol=0;
-	hist.forEach(x=>{
-		vol+=Number(x.Volume||0);
-	});
-
-	monthVolume.innerText=vol.toLocaleString()+' lbs';
-	monthCount.innerText=hist.length+' Exercises Logged';
-	renderTopMuscleGroups(hist);
-	renderRecentActivity(hist);
-	const dates=[
-		...new Set(
-			hist
-				.map(x=>String(x.WorkoutDate).substring(0,10))
-				.filter(Boolean)
-		)
-	];
-
-	streak.innerText=
-		'🔥 '+
-		dates.length+
-		' Day'+
-		(dates.length===1?'':'s');
-}
-
-function renderTopMuscleGroups(history){
-
-	const groups={};
-
-	history.forEach(x=>{
-
-		const area=x.WorkoutArea||'Other';
-
-		if(!groups[area]){
-			groups[area]=0;
-		}
-
-		groups[area]+=Number(x.Volume||0);
-	});
-
-	const sorted=
-		Object.keys(groups)
-			.map(name=>({
-				name:name,
-				volume:groups[name]
-			}))
-			.sort((a,b)=>b.volume-a.volume)
-			.slice(0,4);
-
-	if(!sorted.length){
-		topMuscleGroups.innerHTML=
-			'<div class="card-row-value">No data yet</div>';
-		return;
-	}
-
-	const max=sorted[0].volume;
-
-	let html='';
-
-	sorted.forEach(x=>{
-
-		const pct=max
-			? Math.round((x.volume/max)*100)
-			: 0;
-
-		html+=`
-			<div class="group">
-
-				<div class="group-label">
-					<span>${x.name}</span>
-					<span>${x.volume.toLocaleString()}</span>
-				</div>
-
-				<div class="group-bar">
-					<div
-						class="group-fill"
-						style="width:${pct}%">
-					</div>
-				</div>
-
-			</div>`;
-	});
-
-	topMuscleGroups.innerHTML=html;
-}
-
-function renderRecentActivity(history){
-
-	const recent=
-		history
-			.filter(x=>x.ExerciseName)
-			.slice(0,5);
-
-	if(!recent.length){
-		recentActivity.innerHTML=
-			'<div class="card-row-value">No recent activity</div>';
-
-		return;
-	}
-
-	let html='';
-
-	recent.forEach(x=>{
-
-		const dateText=
-			formatRecentDate(
-				String(x.WorkoutDate).substring(0,10)
-			);
-
-		html+=`
-			<div class="card-row">
-
-				<div class="card-row-label">
-					${x.ExerciseName}
-				</div>
-
-				<div class="card-row-value">
-					${dateText}
-				</div>
-
-			</div>`;
-	});
-
-	recentActivity.innerHTML=html;
-}
-
-function formatRecentDate(dateValue){
-
-	const today=new Date();
-
-	const todayText=
-		today.getFullYear()+
-		'-'+
-		String(today.getMonth()+1).padStart(2,'0')+
-		'-'+
-		String(today.getDate()).padStart(2,'0');
-
-	const yesterday=new Date();
-	yesterday.setDate(yesterday.getDate()-1);
-
-	const yesterdayText=
-		yesterday.getFullYear()+
-		'-'+
-		String(yesterday.getMonth()+1).padStart(2,'0')+
-		'-'+
-		String(yesterday.getDate()).padStart(2,'0');
-
-	if(dateValue===todayText){
-		return 'Today';
-	}
-
-	if(dateValue===yesterdayText){
-		return 'Yesterday';
-	}
-
-	return dateValue;
-}
-
-document.getElementById('navigation').innerHTML = buildNavigation('home');
-
-init();
-</script>
 </body>
 </html>

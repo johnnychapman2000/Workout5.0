@@ -26,85 +26,91 @@
 		id="r"
 		class="btn active"
 		onclick="loadRecent()">
-		Recent
+		⚡ Recent
 	</button>
 
 	<button
 		id="d"
 		class="btn"
 		onclick="loadDaily()">
-		Daily
+		📅 Daily
 	</button>
 
 	<button
 		id="v"
 		class="btn"
 		onclick="loadVolume()">
-		Volume
+		📊 Volume
 	</button>
 
 </div>
 
+<div id="historySummary"></div>
+
 <div id="content"></div>
 
-<div id="navigation"></div>
+<div id='quickModal' class='modal'>
+	<div class='content'>
+		<h3>Quick Entry</h3>
 
-<script>
-function setA(x){r.classList.remove('active');d.classList.remove('active');v.classList.remove('active');document.getElementById(x).classList.add('active')}
+		<select id='area' onchange='loadQuickExercises()'>
+			<option>Abs</option>
+			<option>Back</option>
+			<option>Biceps</option>
+			<option>Body</option>
+			<option>Cardio</option>
+			<option>Chest</option>
+			<option>Legs</option>
+			<option>Shoulders</option>
+			<option>Stretching</option>
+			<option>Triceps</option>
+		</select>
 
-async function loadRecent(){setA('r');
-const data=await(await fetch(API+'?action=getRecentWorkouts')).json();content.innerHTML='';
+		<select id='quickExercise'
+			onchange='quickExerciseChanged()'>
+		</select>
 
-	data.filter(x => x.ExerciseName !== 'Steps')
-    	.slice(0,10)
+		<div id='quickFields'></div>
 
-.forEach(x=>content.innerHTML+=`
+		<button class='btn save'
+			onclick='saveQuickEntry()'>
+			Save
+		</button>
 
-<div class=card>
-	<div class=history-name>${x.ExerciseName||''}</div>
-	<div class=history-muted>${String(x.WorkoutDate||'').substring(0,10)}</div>
-	<div>${x.Sets||0} × ${x.Reps||0} × ${x.Weight||0}</div>
-</div>`)}
-
-
-async function loadDaily(){setA('d');const data=await(await fetch(API+'?action=getWorkoutHistory')).json();const grp={};data.forEach(x=>{const day=String(x.WorkoutDate).substring(0,10);if(!grp[day])grp[day]={count:0,vol:0};grp[day].count++;grp[day].vol+=Number(x.Volume||0)});content.innerHTML='';Object.keys(grp).sort().reverse().forEach(day=>content.innerHTML+=`<div class=card>
-
-	<div class=history-row>
-
-	<div class=history-name>
-
-${day}</div><div>${grp[day].count} exercises</div></div>
-
-	<div class=history-muted>
-Volume ${grp[day].vol.toLocaleString()}</div></div>`)}
-
-
-
-async function loadVolume(){
-	setA('v');
-	const data=await(await fetch(API+'?action=getVolumeHistory')).json();
-	const filteredData=data.filter(x => x.PlanName !== 'Steps');
-
-	content.innerHTML='';
-
-	filteredData.forEach(x => content.innerHTML += `
-
-
-<div class=card>
-	<div class=history-row>
-		<div class=history-name>${x.PlanName}</div>
-		<div>${x.ExerciseCount}</div>
+		<button class='btn cancel'
+			onclick='quickModal.style.display="none"'>
+			Cancel
+		</button>
 	</div>
-	<div class=history-muted>${Number(x.TotalVolume).toLocaleString()} lbs</div>
 </div>
-`);
-}
 
-	document.getElementById('navigation').innerHTML =
-		buildNavigation('history');
+<div id="historyDetailModal" class="modal">
 
-	loadRecent();
- 
-</script>
+	<div class="content">
+
+		<h3>Workout Details</h3>
+
+		<div id="historyDetailContent"></div>
+
+		<button
+			class="btn cancel"
+			id="deleteHistoryBtn">
+			Delete
+		</button>
+
+		<button
+			class="btn"
+			onclick="closeHistoryDetail()">
+			Close
+		</button>
+
+	</div>
+
+</div>
+
+<div id="navigation"></div>
+<script src="profile.js"></script>
+<script src="history.js"></script>
+<script src="quickEntry.js"></script>
 </body>
 </html>

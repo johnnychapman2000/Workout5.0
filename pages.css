@@ -48,6 +48,53 @@
 	font-size:.9rem;
 }
 
+.tabs{
+	display:flex;
+	gap:10px;
+	margin-bottom:16px;
+}
+
+.tabs .btn{
+	flex:1;
+	border-radius:12px;
+}
+.history-activity{
+	display:flex;
+	align-items:center;
+	gap:12px;
+
+	padding:14px 16px;
+
+	margin-bottom:8px;
+
+	background:rgba(255,255,255,.03);
+
+	border:1px solid var(--border);
+
+	border-radius:12px;
+
+	cursor:pointer;
+}
+
+.activity-name{
+	flex:1;
+
+	font-weight:600;
+}
+
+.activity-result{
+	min-width:110px;
+
+	text-align:center;
+}
+
+.activity-date{
+	min-width:60px;
+
+	text-align:right;
+
+	color:var(--muted);
+}
 
 /* ========================================
    STATS PAGE

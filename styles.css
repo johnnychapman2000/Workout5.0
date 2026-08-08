@@ -107,6 +107,141 @@ body{
 	color:var(--muted);
 }
 
+.workout-hero{
+	position:relative;
+	overflow:hidden;
+	min-height:330px;
+	padding:0;
+	border-color:var(--red);
+}
+
+.workout-hero-image{
+	position:absolute;
+	inset:0;
+	width:100%;
+	height:100%;
+	object-fit:contain;
+	object-position:center center;
+	opacity:.82;
+	background:#000;
+	transform:scale(.99);
+}
+
+.workout-hero::after{
+	content:"";
+	position:absolute;
+	inset:0;
+	background:linear-gradient(
+		180deg,
+		rgba(8,17,31,.15),
+		rgba(8,17,31,.45),
+		rgba(8,17,31,.88)
+	);
+	z-index:1;
+}
+
+.workout-hero-overlay{
+	position:relative;
+	z-index:2;
+	height:100%;
+	min-height:330px;
+	display:flex;
+	flex-direction:column;
+	justify-content:space-between;
+	padding:18px;
+}
+
+.workout-hero .title{
+	text-align:center;
+	font-size:2rem;
+	font-weight:800;
+	text-shadow:
+		0 0 8px rgba(0,0,0,.85),
+		0 0 14px rgba(255,87,87,.35);
+}
+
+.workout-progress-wrap{
+	margin-top:auto;
+	background:rgba(8,17,31,.72);
+	border:1px solid rgba(255,255,255,.08);
+	border-radius:16px;
+	padding:12px;
+	backdrop-filter:blur(4px);
+}
+
+.workout-progress-top{
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	font-size:.85rem;
+	color:#fff;
+	margin-bottom:8px;
+}
+
+.workout-progress-line{
+	height:10px;
+	background:#223a58;
+	border-radius:999px;
+	overflow:hidden;
+	box-shadow:
+		inset 0 0 8px rgba(0,0,0,.35);
+}
+
+.workout-progress-fill{
+	height:100%;
+	width:0;
+	background:linear-gradient(
+		90deg,
+		#B22222,
+		var(--red)
+	);
+	border-radius:999px;
+	box-shadow:
+		0 0 12px rgba(255,87,87,.55);
+	transition:width .8s ease;
+}
+
+.workout-hero .prog{
+	margin-top:8px;
+	text-align:center;
+	color:#dbeafe;
+}
+
+.workout-progress-wrap*
+	margin-top:6px;
+}
+
+.workout-prog*ess-top{
+	display:flex;
+	justify-c*ntent:space-between;
+	align-items:*enter;
+	font-size:.85rem;
+	color:v*r(--muted);
+	margin-bottom:6px;
+}
+*.workout-progress-line{
+	height:10*x;
+	background:#223a58;
+	border-ra*ius:999px;
+	overflow:hidden;
+	box-*hadow:
+		inset 0 0 8px rgba(0,0,0,*35);
+}
+
+.workout-progress-fill{
+	h*ight:100%;
+	width:0;
+	background:l*near-gradient(
+		90deg,
+		*B22222,
+		var(--red)
+	);
+	border-r*dius:999px;
+*box-shadow:
+		* 0 12px rgba(255,87,87,.55);
+	tran*ition:width .8s ease;
+}
+
 /* ====================
    WORKOUT ROWS
 ==================== */
@@ -230,6 +365,18 @@ select{
 	max-width:440px;
 	z-index:500;
 	box-sizing:border-box;
+}
+
+.navwrap::before{
+	content:"";
+	position:absolute;
+	left:-14px;
+	right:-14px;
+	bottom:-10px;
+	height:92px;
+	background:var(--bg);
+	border-radius:24px 24px 0 0;
+	z-index:-1;
 }
 
 .nav{

@@ -11,24 +11,24 @@ function buildNavigation(activePage){
 		<div class="nav">
 
 			<a ${activePage==='home'?'class="active"':''}
-				href="index.html">
+				href="${buildProfileUrl('index.html')}">
 				🏠<br>Home
 			</a>
 
 			<a ${activePage==='history'?'class="active"':''}
-				href="history.html">
+				href="${buildProfileUrl('history.html')}">
 				📜<br>History
 			</a>
 
 			<span style="width:20%"></span>
 
 			<a ${activePage==='stats'?'class="active"':''}
-				href="stats.html">
+				href="${buildProfileUrl('stats.html')}">
 				📊<br>Stats
 			</a>
 
 			<a ${activePage==='workout'?'class="active"':''}
-				href="workout.html">
+				href="${buildProfileUrl('workout.html')}">
 				💪<br>Workout
 			</a>
 

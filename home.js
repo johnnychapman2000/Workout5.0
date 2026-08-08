@@ -44,10 +44,17 @@ document.querySelector(
 
 	nextWorkout.innerText = next.PlanName;
 
-	const hist =
-		await (
-			await fetch(API + '?action=getWorkoutHistory')
-		).json();
+const hist =
+	await (
+		await fetch(
+			API +
+			'?action=getWorkoutHistory' +
+			'&user=' +
+			getUserCode() +
+			'&t=' +
+			Date.now()
+		)
+	).json();
 
 	let vol = 0;
 

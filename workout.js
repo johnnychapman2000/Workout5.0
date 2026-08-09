@@ -154,10 +154,11 @@ function row(e,c){
 
 	if(c){
 
-		const log=HISTORY.find(x=>
-			String(x.ExerciseID)===String(e.ExerciseID) &&
-			String(x.PlanName).trim()===String(CW.PlanName).trim()
-		);
+const log=HISTORY.find(x=>
+	String(x.ExerciseID)===String(e.ExerciseID) &&
+	String(x.PlanName).trim()===String(CW.PlanName).trim() &&
+	String(x.WorkoutDate).substring(0,10)===getToday()
+);
 
 		if(log){
 

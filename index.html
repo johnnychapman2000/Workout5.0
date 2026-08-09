@@ -6,6 +6,8 @@
 	<title>Home</title>
 	<link rel="stylesheet" href="styles.css?v=1">
 	<link rel="stylesheet" href="cards.css?v=1">
+	<link rel="stylesheet" href="ticker-scroll.css?v=7">
+	<link rel="stylesheet" href="ticker-slide.css?v=3">
 	<script src="api.js"></script>
 	<script src="navigation.js"></script>
 
@@ -17,6 +19,33 @@
 		<div id="exerciseCount" class="exercise-count">Loading...</div>
 		<button class="btn-primary" onclick="location.href=buildProfileUrl('workout.html')">START WORKOUT</button>
 	</div>
+
+<div class="card ticker-card ticker-slide-card">
+
+	<div class="ticker-title">
+		📡 Workout Wire
+	</div>
+
+	<div class="ticker-window ticker-slide-window">
+
+		<div
+			id="tickerSlideHeadline"
+			class="ticker-slide-headline">
+		</div>
+
+		<div class="ticker-slide-detail-wrap">
+
+			<div
+				id="tickerSlideDetail"
+				class="ticker-slide-detail">
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
 	<div class="card">
 
 		<div class="card-header">
@@ -142,7 +171,8 @@
 <div id="navigation"></div>
 <script src="profile.js"></script>
 <script src="home.js"></script>
-<script src="quickEntry.js"></script>
+<script src="quickEntry.js?v=1"></script>
+<script src="familyTicker.js?v=14"></script>
 
 </body>
 </html>

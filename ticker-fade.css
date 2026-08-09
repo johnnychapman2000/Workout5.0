@@ -1,0 +1,39 @@
+/* ========================================
+   TICKER STYLE 2
+   Fade In / Fade Out
+   ======================================== */
+
+.ticker-fade-window{
+	min-height:38px;
+	display:flex;
+	align-items:center;
+}
+
+.ticker-fade-text{
+	font-size:1rem;
+	font-weight:700;
+	color:#fff;
+	animation:tickerFade 5s ease-in-out forwards;
+}
+
+@keyframes tickerFade{
+	0%{
+		opacity:0;
+		transform:translateY(8px);
+	}
+
+	15%{
+		opacity:1;
+		transform:translateY(0);
+	}
+
+	85%{
+		opacity:1;
+		transform:translateY(0);
+	}
+
+	100%{
+		opacity:0;
+		transform:translateY(-8px);
+	}
+}

@@ -1,0 +1,941 @@
+/* ========================================
+   TICKER STYLE 1
+   Main Family Status Scroll
+   ======================================== */
+
+.ticker-card{
+	overflow:hidden;
+	position:relative;
+}
+
+.ticker-title{
+	font-size:.85rem;
+	color:var(--muted);
+	margin-bottom:10px;
+	font-weight:700;
+	text-transform:uppercase;
+	letter-spacing:.05em;
+}
+
+.ticker-alert-row{
+	display:flex;
+	align-items:center;
+	margin-bottom:8px;
+}
+
+.ticker-alert-label{
+	display:inline-block;
+	padding:4px 10px;
+	border-radius:6px;
+	font-size:.85rem;
+	font-weight:900;
+	letter-spacing:.06em;
+	text-transform:uppercase;
+}
+
+.ticker-window{
+	width:100%;
+	overflow:hidden;
+	white-space:nowrap;
+}
+
+.ticker-scroll-window{
+	min-height:26px;
+}
+
+.ticker-scroll-text{
+	display:inline-block;
+	padding-left:100%;
+	font-size:1rem;
+	font-weight:800;
+	color:#fff;
+	line-height:1.4;
+	animation:tickerScroll 18s linear forwards;
+}
+
+/* ========================================
+   Message Types
+   ======================================== */
+
+.ticker-alert{
+	border-color:#ff3b3b;
+	box-shadow:0 0 18px rgba(255,59,59,.45);
+}
+
+.ticker-alert .ticker-alert-label{
+	background:#ff3b3b;
+	color:#fff;
+}
+
+.ticker-alert .ticker-scroll-text{
+	color:#ff7a7a;
+}
+
+.ticker-leader{
+	border-color:#ffd700;
+	box-shadow:0 0 22px rgba(255,215,0,.55);
+}
+
+.ticker-leader .ticker-alert-label{
+	background:#ffd700;
+	color:#111;
+}
+
+.ticker-leader .ticker-scroll-text{
+	color:#ffd700;
+}
+
+.ticker-biglift{
+	border-color:#39ff88;
+	box-shadow:0 0 18px rgba(57,255,136,.35);
+}
+
+.ticker-biglift .ticker-alert-label{
+	background:#39ff88;
+	color:#06170c;
+}
+
+.ticker-biglift .ticker-scroll-text{
+	color:#76ff9f;
+}
+
+.ticker-closing{
+	border-color:#ff9800;
+	box-shadow:0 0 18px rgba(255,152,0,.4);
+}
+
+.ticker-closing .ticker-alert-label{
+	background:#ff9800;
+	color:#111;
+}
+
+.ticker-closing .ticker-scroll-text{
+	color:#ffb84d;
+}
+
+.ticker-bad{
+	border-color:#ff4d4d;
+	box-shadow:0 0 18px rgba(255,77,77,.4);
+}
+
+.ticker-bad .ticker-alert-label{
+	background:#ff4d4d;
+	color:#fff;
+}
+
+.ticker-bad .ticker-scroll-text{
+	color:#ff6b6b;
+}
+
+/* ========================================
+   Effects
+   ======================================== */
+
+.ticker-trophy-bounce::before{
+	content:'🏆';
+	position:absolute;
+	right:14px;
+	top:12px;
+	font-size:1.6rem;
+	animation:trophyBounce .8s ease-in-out;
+}
+
+.ticker-alert-blast{
+	animation:tickerAlertBlast .7s ease-in-out;
+}
+
+.ticker-card-shake{
+	animation:tickerShake .25s linear 4;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+@keyframes tickerScroll{
+	from{
+		transform:translateX(0);
+	}
+
+	to{
+		transform:translateX(-100%);
+	}
+}
+
+@keyframes tickerAlertBlast{
+	0%{
+		transform:scale(1);
+		box-shadow:0 0 0 rgba(255,59,59,0);
+	}
+
+	30%{
+		transform:scale(1.03);
+		box-shadow:0 0 34px rgba(255,59,59,.75);
+	}
+
+	100%{
+		transform:scale(1);
+	}
+}
+
+@keyframes tickerShake{
+	0%{
+		transform:translateX(0);
+	}
+
+	25%{
+		transform:translateX(-3px);
+	}
+
+	50%{
+		transform:translateX(3px);
+	}
+
+	75%{
+		transform:translateX(-2px);
+	}
+
+	100%{
+		transform:translateX(0);
+	}
+}
+
+@keyframes trophyBounce{
+	0%{
+		transform:scale(.4) translateY(8px);
+		opacity:0;
+	}
+
+	40%{
+		transform:scale(1.25) translateY(-4px);
+		opacity:1;
+	}
+
+	100%{
+		transform:scale(1) translateY(0);
+		opacity:1;
+	}
+}
+
+/* ========================================
+   BIG VISUAL TICKER EFFECTS
+   ======================================== */
+
+.ticker-card::after{
+	content:'';
+	position:absolute;
+	inset:0;
+	pointer-events:none;
+	border-radius:inherit;
+	opacity:0;
+}
+
+/* ALERT - explosive red flash */
+
+.ticker-alert.ticker-alert-blast::after{
+	background:
+		radial-gradient(
+			circle at center,
+			rgba(255,80,80,.45),
+			rgba(255,80,80,0) 65%
+		);
+	animation:alertExplosion .9s ease-out;
+}
+
+.ticker-alert{
+	animation:alertCardPop .9s ease-out;
+}
+
+/* LEADER - gold champion burst */
+
+.ticker-leader.ticker-leader-burst::after{
+	background:
+		radial-gradient(
+			circle at 80% 20%,
+			rgba(255,215,0,.55),
+			rgba(255,215,0,0) 60%
+		);
+	animation:leaderBurst 1.1s ease-out;
+}
+
+.ticker-leader{
+	animation:leaderGlow 1.4s ease-in-out;
+}
+
+/* BIG LIFT - fire pulse */
+
+.ticker-biglift.ticker-fire-pulse::after{
+	background:
+		radial-gradient(
+			circle at 20% 50%,
+			rgba(255,120,0,.45),
+			rgba(255,120,0,0) 65%
+		);
+	animation:firePulse 1.1s ease-out;
+}
+
+/* CLOSING - orange sweep */
+
+.ticker-closing.ticker-sweep::after{
+	background:
+		linear-gradient(
+			90deg,
+			rgba(255,152,0,0),
+			rgba(255,152,0,.35),
+			rgba(255,152,0,0)
+		);
+	animation:closingSweep 1.2s ease-out;
+}
+
+/* BAD - shake plus red warning pulse */
+
+.ticker-bad.ticker-card-shake::after{
+	background:
+		radial-gradient(
+			circle at center,
+			rgba(255,0,0,.32),
+			rgba(255,0,0,0) 70%
+		);
+	animation:badPulse .8s ease-out;
+}
+
+/* ========================================
+   SPECIAL ICONS
+   ======================================== */
+
+.ticker-leader.ticker-trophy-bounce::before{
+	content:'🏆';
+	position:absolute;
+	right:14px;
+	top:12px;
+	font-size:1.6rem;
+	animation:trophyBounce .8s ease-in-out;
+	z-index:2;
+}
+
+.ticker-alert.ticker-alert-icon::before{
+	content:'🚨';
+	position:absolute;
+	right:14px;
+	top:12px;
+	font-size:1.6rem;
+	animation:alertIconPop .75s ease-out;
+	z-index:2;
+}
+
+.ticker-biglift.ticker-fire-icon::before{
+	content:'🔥';
+	position:absolute;
+	right:14px;
+	top:12px;
+	font-size:1.6rem;
+	animation:fireIconPop .8s ease-out;
+	z-index:2;
+}
+
+.ticker-closing.ticker-closing-icon::before{
+	content:'⚔️';
+	position:absolute;
+	right:14px;
+	top:12px;
+	font-size:1.6rem;
+	animation:closingIconPop .8s ease-out;
+	z-index:2;
+}
+
+.ticker-bad.ticker-bad-icon::before{
+	content:'💥';
+	position:absolute;
+	right:14px;
+	top:12px;
+	font-size:1.6rem;
+	animation:badIconDrop .8s ease-out;
+	z-index:2;
+}
+
+/* ========================================
+   BIG EFFECT ANIMATIONS
+   ======================================== */
+
+@keyframes alertExplosion{
+	0%{
+		opacity:0;
+		transform:scale(.85);
+	}
+
+	35%{
+		opacity:1;
+		transform:scale(1.08);
+	}
+
+	100%{
+		opacity:0;
+		transform:scale(1.25);
+	}
+}
+
+@keyframes alertCardPop{
+	0%{
+		transform:scale(1);
+	}
+
+	35%{
+		transform:scale(1.025);
+	}
+
+	100%{
+		transform:scale(1);
+	}
+}
+
+@keyframes leaderBurst{
+	0%{
+		opacity:0;
+		transform:scale(.9);
+	}
+
+	40%{
+		opacity:1;
+		transform:scale(1.08);
+	}
+
+	100%{
+		opacity:0;
+		transform:scale(1.2);
+	}
+}
+
+@keyframes leaderGlow{
+	0%{
+		box-shadow:0 0 0 rgba(255,215,0,0);
+	}
+
+	40%{
+		box-shadow:0 0 34px rgba(255,215,0,.75);
+	}
+
+	100%{
+		box-shadow:0 0 22px rgba(255,215,0,.55);
+	}
+}
+
+@keyframes firePulse{
+	0%{
+		opacity:0;
+		transform:scale(.9);
+	}
+
+	40%{
+		opacity:1;
+		transform:scale(1.08);
+	}
+
+	100%{
+		opacity:0;
+		transform:scale(1.2);
+	}
+}
+
+@keyframes closingSweep{
+	0%{
+		opacity:0;
+		transform:translateX(-100%);
+	}
+
+	35%{
+		opacity:1;
+	}
+
+	100%{
+		opacity:0;
+		transform:translateX(100%);
+	}
+}
+
+@keyframes badPulse{
+	0%{
+		opacity:0;
+		transform:scale(.9);
+	}
+
+	35%{
+		opacity:1;
+		transform:scale(1.05);
+	}
+
+	100%{
+		opacity:0;
+		transform:scale(1.2);
+	}
+}
+
+@keyframes alertIconPop{
+	0%{
+		opacity:0;
+		transform:scale(.3) rotate(-15deg);
+	}
+
+	45%{
+		opacity:1;
+		transform:scale(1.35) rotate(8deg);
+	}
+
+	100%{
+		opacity:1;
+		transform:scale(1) rotate(0);
+	}
+}
+
+@keyframes fireIconPop{
+	0%{
+		opacity:0;
+		transform:scale(.4) translateY(8px);
+	}
+
+	45%{
+		opacity:1;
+		transform:scale(1.25) translateY(-4px);
+	}
+
+	100%{
+		opacity:1;
+		transform:scale(1) translateY(0);
+	}
+}
+
+@keyframes closingIconPop{
+	0%{
+		opacity:0;
+		transform:scale(.5) rotate(-25deg);
+	}
+
+	45%{
+		opacity:1;
+		transform:scale(1.25) rotate(8deg);
+	}
+
+	100%{
+		opacity:1;
+		transform:scale(1) rotate(0);
+	}
+}
+
+@keyframes badIconDrop{
+	0%{
+		opacity:0;
+		transform:translateY(-12px) scale(.5);
+	}
+
+	50%{
+		opacity:1;
+		transform:translateY(4px) scale(1.25);
+	}
+
+	100%{
+		opacity:1;
+		transform:translateY(0) scale(1);
+	}
+}
+
+/* ========================================
+   EXTREME CARD EFFECTS
+   ======================================== */
+
+/* Card jumps forward, flies slightly off-screen, then snaps back */
+
+.ticker-card-bounce-out{
+	animation:tickerBounceOut 1.15s ease-in-out;
+}
+
+/* Card slams in like breaking news */
+
+.ticker-card-slam{
+	animation:tickerSlamIn .9s ease-out;
+}
+
+/* Card does a big warning wobble */
+
+.ticker-card-wobble{
+	animation:tickerWobble 1s ease-in-out;
+}
+
+@keyframes tickerBounceOut{
+	0%{
+		transform:scale(1) translateX(0);
+	}
+
+	25%{
+		transform:scale(1.08) translateX(0);
+	}
+
+	55%{
+		transform:scale(1.1) translateX(110%);
+	}
+
+	75%{
+		transform:scale(.98) translateX(-8%);
+	}
+
+	100%{
+		transform:scale(1) translateX(0);
+	}
+}
+
+@keyframes tickerSlamIn{
+	0%{
+		transform:translateX(-120%) scale(.95);
+		opacity:.3;
+	}
+
+	55%{
+		transform:translateX(4%) scale(1.04);
+		opacity:1;
+	}
+
+	75%{
+		transform:translateX(-2%) scale(.99);
+	}
+
+	100%{
+		transform:translateX(0) scale(1);
+	}
+}
+
+@keyframes tickerWobble{
+	0%{
+		transform:rotate(0deg) scale(1);
+	}
+
+	20%{
+		transform:rotate(-2deg) scale(1.02);
+	}
+
+	40%{
+		transform:rotate(2deg) scale(1.02);
+	}
+
+	60%{
+		transform:rotate(-1.5deg) scale(1.01);
+	}
+
+	80%{
+		transform:rotate(1deg) scale(1.01);
+	}
+
+	100%{
+		transform:rotate(0deg) scale(1);
+	}
+}
+
+/* ========================================
+   VERSION 1 BIG EFFECT TEST
+   ======================================== */
+
+.ticker-scroll-card{
+	overflow:*isible;
+	position:relative;
+	trans*tion:
+		transform .2s ease,
+		box-*hadow .2s ease,
+		border-color .2s*ease;
+}
+
+.ticker-effect-icon{
+	pos*tion:absolute;
+	right:16px;
+	top:-*8px;
+	font-size:2.4rem;
+	z-index:5*
+	opacity:0;
+	pointer-events:none;*	filter:drop-shadow(0 0 10px rgba(*55,255,255,.65));
+}
+
+.ticker-scrol*-card.ticker-active-effect.ticker-*lert{
+	animation:tickerAlertSlam 1*1s ease-in-out;
+}
+
+.ticker-scroll-*ard.ticker-active-effect.ticker-le*der{
+	animation:tickerLeaderLaunch*1.3s ease-in-out;
+}
+
+.ticker-scrol*-card.ticker-active-effect.ticker-*iglift{
+	animation:tickerBigLiftBo*nce 1.1s ease-in-out;
+}
+
+.ticker-s*roll-card.ticker-active-effect.tic*er-closing{
+	animation:tickerClosi*gWobble 1.1s ease-in-out;
+}
+
+.tick*r-scroll-card.ticker-active-effect*ticker-bad{
+	animation:tickerBadSh*ke 1s ease-in-out;
+}
+
+.ticker-scro*l-card.ticker-alert .ticker-effect*icon{
+	opacity:1;
+	animation:tickerIconExplode 1s ease-out;
+}
+
+.ticker-scroll-card.ticker-leader .ticker-effect-icon{
+	opacity:1;
+	animation:tickerIconTrophy 1s ease-out;
+}
+
+.ticker-scroll-card.ticker-biglift .ticker-effect-icon{
+	opacity:1;
+	animation:tickerIconFire 1s ease-out;
+}
+
+.ticker-scroll-card.ticker-closing .ticker-effect-icon{
+	opacity:1;
+	animation:tickerIconSwords 1s ease-out;
+}
+
+.ticker-scroll-card.ticker-bad .ticker-effect-icon{
+	opacity:1;
+	animation:tickerIconImpact 1s ease-out;
+}
+
+/* ========================================
+   BIG CARD ANIMATIONS
+   ======================================== */
+
+@keyframes tickerAlertSlam{*	0%{
+		transform:translateX(-120%)*scale(.85) rotate(-4deg);
+		box-sh*dow:0 0 0 rgba(255,59,59,0);
+	}
+
+	*5%{
+		transform:translateX(8%) sca*e(1.08) rotate(2deg);
+		box-shadow*0 0 42px rgba(255,59,59,.85);
+	}
+
+*70%{
+		transform:translateX(-4%) s*ale(.98) rotate(-1deg);
+	}
+
+	100%{*		transform:translateX(0) scale(1)*rotate(0deg);
+	}
+}
+
+@keyframes tic*erLeaderLaunch{
+	0%{
+		transform:s*ale(1) translateX(0) rotate(0deg);*		box-shadow:0 0 0 rgba(255,215,0,*);
+	}
+
+	25%{
+		transform:scale(1.1*) translateX(0) rotate(0deg);
+		bo*-shadow:0 0 46px rgba(255,215,0,.9*);
+	}
+
+	50%{
+		transform:scale(1.0*) translateX(55%) rotate(3deg);
+	}*
+	70%{
+		transform:scale(1.02) tra*slateX(-12%) rotate(-2deg);
+	}
+
+	8*%{
+		transform:scale(1.01) transla*eX(5%) rotate(1deg);
+	}
+
+	100%{
+		*ransform:scale(1) translateX(0) ro*ate(0deg);
+	}
+}
+
+@keyframes ticker*igLiftBounce{
+	0%{
+		transform:sca*e(1) translateY(0);
+		box-shadow:0*0 0 rgba(57,255,136,0);
+	}
+
+	35%{
+*	transform:scale(1.09) translateY(*10px);
+		box-shadow:0 0 38px rgba(*7,255,136,.7);
+	}
+
+	65%{
+		transfo*m:scale(.98) translateY(4px);
+	}
+
+*100%{
+		transform:scale(1) transla*eY(0);
+	}
+}
+
+@keyframes tickerClos*ngWobble{
+	0%{
+		transform:rotate(*deg) scale(1);
+		box-shadow:0 0 0 *gba(255,152,0,0);
+	}
+
+	20%{
+		tran*form:rotate(-3deg) scale(1.04);
+		*ox-shadow:0 0 34px rgba(255,152,0,*75);
+	}
+
+	40%{
+		transform:rotate(*deg) scale(1.04);
+	}
+
+	60%{
+		tran*form:rotate(-2deg) scale(1.02);
+	}*
+	80%{
+		transform:rotate(1deg) sc*le(1.01);
+	}
+
+	100%{
+		transform:r*tate(0deg) scale(1);
+	}
+}
+
+@keyframes tickerBadShake{
+	0%{
+		transform:translateX(0) rotate(0deg);
+		box-shadow:0 0 0 rgba(255,77,77,0);
+	}
+
+	15%{
+		transform:translateX(-8px) rotate(-2deg);
+		box-shadow:0 0 36px rgba(255,77,77,.75);
+	}
+
+	30%{
+		transform:translateX(8px) rotate(2deg);
+	}
+
+	45%{
+		transform:translateX(-6px) rotate(-1deg);
+	}
+
+	60%{
+		transform:translateX(6px) rotate(1deg);
+	}
+
+	75%{
+		transform:translateX(-3px) rotate(-.5deg);
+	}
+
+	100%{
+		transform:translateX(0) rotate(0deg);
+	}
+}
+
+/* ========================================
+   ICON ANIMATIONS
+   ======================================== */
+
+@keyframes tickerIconExplode{
+	*%{
+		transform:scale(.2) rotate(-2*deg);
+		opacity:0;
+	}
+
+	40%{
+		tra*sform:scale(1.7) rotate(12deg);
+		*pacity:1;
+	}
+
+	100%{
+		transform:s*ale(1) rotate(0deg);
+		opacity:1;
+*}
+}
+
+@keyframes tickerIconTrophy{
+*0%{
+		transform:scale(.2) translateY(20px);
+		opacity:0;
+	}
+
+	45%{
+		transform:scale(1.6) translateY(-10px);
+		opacity:1;
+	}
+
+	100%{
+		transform:scale(1) translateY(0);
+		opacity:1;
+	}
+}
+
+@keyframes tickerIconFire{
+	0%{
+		transform:scale(.3) translateY(12px);
+		opacity:0;
+	}
+
+	45%{
+		transform:scale(1.5) translateY(-8px);
+		opacity:1;
+	}
+
+	100%{
+		transform:scale(1) translateY(0);
+		opacity:1;
+	}
+}
+
+@keyframes tickerIconSwords{
+	0%{
+		transform:scale(.3) rotate(-35deg);
+		opacity:0;
+	}
+
+	45%{
+		transform:scale(1.5) rotate(12deg);
+		opacity:1;
+	}
+
+	100%{
+		transform:scale(1) rotate(0deg);
+		opacity:1;
+	}
+}
+
+@keyframes tickerIconImpact{
+	0%{
+		transform:scale(.3) translateY(-20px);
+		opacity:0;
+	}
+
+	45%{
+		transform:scale(1.55) translateY(8px);
+		opacity:1;
+	}
+
+	100%{
+		transform:scale(1) translateY(0);
+		opacity:1;
+	}
+}
+
+/* ========================================
+   TICKER TITLE COLORS BY STATUS
+   ======================================== */
+
+.ticker-alert .ticker-title{
+	color:#ff4d4d;
+	text-shadow:0 0 10px rgba(255,77,77,.65);
+}
+
+.ticker-leader .ticker-title{
+	color:#ffd700;
+	text-shadow:0 0 12px rgba(255,215,0,.7);
+}
+
+.ticker-biglift .ticker-title{
+	color:#76ff9f;
+	text-shadow:0 0 10px rgba(118,255,159,.6);
+}
+
+.ticker-closing .ticker-title{
+	color:#ffb84d;
+	text-shadow:0 0 10px rgba(255,184,77,.65);
+}
+
+.ticker-bad .ticker-title{
+	color:#ff6b6b;
+	text-shadow:0 0 10px rgba(255,107,107,.65);
+}

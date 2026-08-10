@@ -5,154 +5,203 @@
 const MESSAGE_BANK = {
 
 	alert: [
-
 		{
 			headline:'ALERT!!!!',
 			text:'THIS JUST IN!!! {USER} just completed {VOLUME} lbs on {EXERCISE}. The family leaderboard has been warned.'
 		},
-
 		{
 			headline:'ALERT!!!!',
 			text:'BREAKING NEWS!!! {USER} just logged {EXERCISE} for {VOLUME} lbs. Things are getting interesting.'
 		},
-
 		{
 			headline:'ALERT!!!!',
 			text:'THIS JUST IN!!! {USER} just made noise with {EXERCISE}. The scoreboard is paying attention.'
 		},
-
 		{
 			headline:'ALERT!!!!',
 			text:'{USER} just added {VOLUME} lbs on {EXERCISE}. Workout Wire is watching.'
 		}
-
 	],
 
-	leader: [
-
-		{
-			headline:'NEW LEADER',
-			text:'{USER} just took over the monthly {AREA} lead. Somebody check on {RIVAL}.'
-		},
-
-		{
-			headline:'NEW LEADER',
-			text:'{USER} is now leading {AREA} for the month by {DIFFERENCE} lbs.'
-		},
-
-		{
-			headline:'NEW LEADER',
-			text:'{USER} has claimed the {AREA} throne. {RIVAL} has been officially notified.'
-		},
-
-		{
-			headline:'NEW LEADER',
-			text:'The monthly {AREA} leaderboard has changed. {USER} is now on top.'
-		}
-
-	],
+leader: [
+{
+  headline:'AREA LEADER',
+  text:'{USER} leads {AREA} by {DIFFERENCE}.'
+},
+{
+  headline:'LEADERBOARD',
+  text:'{AREA}: {USER} remains ahead of {RIVAL} by {DIFFERENCE}.'
+},
+{
+  headline:'MONTHLY STANDINGS',
+  text:'{USER} holds the top spot in {AREA}. Gap: {DIFFERENCE}.'
+},
+{
+  headline:'AREA CONTROL',
+  text:'{USER} currently controls {AREA} with a {DIFFERENCE} lead.'
+}
+],
 
 	biglift: [
-
 		{
 			headline:'BIG LIFT',
 			text:'{USER} just logged {VOLUME} lbs on {EXERCISE}. The scoreboard felt that one.'
 		},
-
 		{
 			headline:'BIG LIFT',
 			text:'{USER} just dropped {VOLUME} lbs on {EXERCISE}. That was not a quiet workout.'
 		},
-
 		{
 			headline:'BIG LIFT',
 			text:'{USER} added serious volume with {EXERCISE}. The gym ledger has been updated.'
 		},
-
 		{
 			headline:'BIG LIFT',
 			text:'{USER} crushed {EXERCISE} for {VOLUME} lbs. The Workout Wire noticed.'
 		},
-
 		{
 			headline:'BIG LIFT',
 			text:'{USER} put up {VOLUME} lbs on {EXERCISE}. That one deserves attention.'
 		}
-
 	],
 
-	closing: [
+	body: [
+		{
+			headline:'BODY MODE',
+			text:'{USER} is putting in bodyweight work with {EXERCISE}. Every rep counts.'
+		},
+		{
+			headline:'BODY MODE',
+			text:'{USER} just knocked out {EXERCISE}. Core strength is being built the hard way.'
+		},
+		{
+			headline:'BODY MODE',
+			text:'{USER} is stacking bodyweight reps with {EXERCISE}. No shortcuts detected.'
+		},
+		{
+			headline:'BODY MODE',
+			text:'{USER} just added another bodyweight session with {EXERCISE}.'
+		}
+	],
 
+	cardio: [
+		{
+			headline:'CARDIO WATCH',
+			text:'{USER} just logged cardio work with {EXERCISE}. Endurance points are on the board.'
+		},
+		{
+			headline:'CARDIO WATCH',
+			text:'{USER} is putting distance between themselves and the couch with {EXERCISE}.'
+		},
+		{
+			headline:'CARDIO WATCH',
+			text:'{USER} just added another cardio session through {EXERCISE}.'
+		},
+		{
+			headline:'CARDIO WATCH',
+			text:'The cardio meter moved today. {USER} logged {EXERCISE}.'
+		}
+	],
+activity: [
+
+	{
+		headline:'In Case you missed it',
+		text:'{USER} logged {EXERCISE} in {AREA}.'
+	},
+
+	{
+		headline:'WORKOUT UPDATE',
+		text:'{USER} completed {EXERCISE}. The training log grows.'
+	},
+
+	{
+		headline:'TRAINING LOG',
+		text:'{USER} added work to {AREA} with {EXERCISE}.'
+	},
+
+	{
+		headline:'Recent Activity',
+		text:'{USER} checked in with {EXERCISE}. Progress continues.'
+	}
+
+],
+
+battle: [
+{
+  headline:'BATTLE LINES',
+  text:'{AREA}: {USER} leads {RIVAL} by {DIFFERENCE}.'
+},
+{
+  headline:'MONTHLY WAR',
+  text:'The {AREA} battle remains active. Gap: {DIFFERENCE}.'
+},
+{
+  headline:'LIVE SCORE',
+  text:'{AREA} standings: {USER} ahead by {DIFFERENCE}.'
+},
+{
+  headline:'FRONT LINE',
+  text:'{USER} is defending a {DIFFERENCE} lead in {AREA}.'
+}
+],
+
+
+	closing: [
 		{
 			headline:'CLOSING THE GAP',
 			text:'{USER} is closing the gap on {RIVAL}. Only {DIFFERENCE} lbs separate them in {AREA}.'
 		},
-
 		{
 			headline:'CLOSING THE GAP',
 			text:'{USER} is making a move in {AREA}. {RIVAL} still leads, but the gap is shrinking.'
 		},
-
 		{
 			headline:'CLOSING THE GAP',
 			text:'{USER} is creeping up in {AREA}. {RIVAL} might want to keep moving.'
 		},
-
 		{
 			headline:'CLOSING THE GAP',
 			text:'The {AREA} race is getting tighter. {USER} is only {DIFFERENCE} lbs behind {RIVAL}.'
 		}
-
 	],
 
 	bad: [
-
 		{
 			headline:'WAKE UP',
 			text:'{USER} is falling behind this month in {AREA}. The dumbbells are starting to ask questions.'
 		},
-
 		{
 			headline:'WAKE UP',
 			text:'{USER} has some catching up to do in {AREA}. The leaderboard is not impressed.'
 		},
-
 		{
 			headline:'WAKE UP',
 			text:'{USER} is behind pace in {AREA}. Time to stop negotiating with gravity.'
 		},
-
 		{
 			headline:'WAKE UP',
 			text:'The {AREA} numbers are slipping for {USER}. Time to answer the bell.'
 		}
-
 	],
 
 	overtaken: [
-
 		{
 			headline:'OVERTAKEN',
 			text:'{USER} just lost the monthly {AREA} lead. {RIVAL} is now ahead by {DIFFERENCE} lbs.'
 		},
-
 		{
 			headline:'OVERTAKEN',
 			text:'{USER} got bumped from the top spot in {AREA}. {RIVAL} has taken control.'
 		},
-
 		{
 			headline:'LEAD LOST',
 			text:'The {AREA} leaderboard just changed. {USER} has been overtaken by {RIVAL}.'
 		},
-
 		{
 			headline:'LEAD LOST',
 			text:'{RIVAL} has moved ahead in {AREA}. {USER} is now chasing by {DIFFERENCE} lbs.'
 		}
-
 	]
-
 };
 let FAMILY_TICKER_EVENTS = [];
 let tickerSlideIndex = 0;
@@ -432,7 +481,19 @@ function getTickerIcon(type){
 	}
 
 	if(type === 'closing'){
+		return '📈';
+	}
+
+	if(type === 'battle'){
 		return '⚔️';
+	}
+
+	if(type === 'body'){
+		return '💪';
+	}
+
+	if(type === 'cardio'){
+		return '🏃';
 	}
 
 	if(type === 'bad'){
@@ -441,6 +502,9 @@ function getTickerIcon(type){
 
 	if(type === 'overtaken'){
 		return '💀';
+	}
+	if(type === 'activity'){
+		return '🏋️';
 	}
 
 	return '🚨';
@@ -505,6 +569,30 @@ function applyTickerEffect(card,type){
 			card
 		);
 	}
+if(type === 'battle'){
+
+	triggerLeaderBurst(
+		card
+	);
+
+	triggerWobble(
+		card
+	);
+}
+
+if(type === 'body'){
+
+	triggerBounceOut(
+		card
+	);
+}
+
+if(type === 'cardio'){
+
+	triggerFirePulse(
+		card
+	);
+}
 }
 
 /* ========================================
@@ -518,27 +606,31 @@ function resetTickerCardClass(card){
 	}
 
 	card.classList.remove(
-		'ticker-alert',
-		'ticker-leader',
-		'ticker-biglift',
-		'ticker-closing',
-		'ticker-bad',
-		'ticker-overtaken',
-		'ticker-trophy-bounce',
-		'ticker-alert-blast',
-		'ticker-card-shake',
-		'ticker-alert-icon',
-		'ticker-leader-burst',
-		'ticker-fire-pulse',
-		'ticker-fire-icon',
-		'ticker-sweep',
-		'ticker-closing-icon',
-		'ticker-bad-icon',
-		'ticker-card-bounce-out',
-		'ticker-card-slam',
-		'ticker-card-wobble',
-		'ticker-card-drop',
-		'ticker-active-effect'
+	'ticker-alert',
+	'ticker-leader',
+	'ticker-biglift',
+	'ticker-closing',
+	'ticker-bad',
+	'ticker-overtaken',
+	'ticker-activity',
+	'ticker-battle',
+	'ticker-body',
+	'ticker-cardio',
+	'ticker-trophy-bounce',
+	'ticker-alert-blast',
+	'ticker-card-shake',
+	'ticker-alert-icon',
+	'ticker-leader-burst',
+	'ticker-fire-pulse',
+	'ticker-fire-icon',
+	'ticker-sweep',
+	'ticker-closing-icon',
+	'ticker-bad-icon',
+	'ticker-card-bounce-out',
+	'ticker-card-slam',
+	'ticker-card-wobble',
+	'ticker-card-drop',
+	'ticker-active-effect'
 	);
 }
 

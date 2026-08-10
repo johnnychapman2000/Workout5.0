@@ -939,3 +939,145 @@
 	color:#ff6b6b;
 	text-shadow:0 0 10px rgba(255,107,107,.65);
 }
+
+/* ========================================
+   ALERT
+   ======================================== */
+
+.ticker-alert{
+	border:2px solid #ff4444;
+	background:
+		linear-gradient(
+			135deg,
+			#5a0000,
+			#b31212
+		);
+	color:#ff6666;
+	box-shadow:
+		0 0 20px rgba(255,68,68,.45);
+}
+
+/* ========================================
+   BATTLE LINES
+   ======================================== */
+
+.ticker-battle{
+	border:2px solid #ffd700;
+	background:
+		linear-gradient(
+			135deg,
+			#1f2430,
+			#473700
+		);
+	color:#ffd700;
+	box-shadow:
+		0 0 18px rgba(255,215,0,.35);
+
+	animation:
+		battlePulse 2.5s infinite;
+}
+
+/* ========================================
+   BODY MODE
+   ======================================== */
+
+.ticker-body{
+	border:2px solid #42a5ff;
+	background:
+		linear-gradient(
+			135deg,
+			#11243f,
+			#1d4c7c
+		);
+	color:#42a5ff;
+	box-shadow:
+		0 0 18px rgba(66,165,255,.30);
+
+	animation:
+		bodyFlex 3s infinite;
+}
+
+/* ========================================
+   CARDIO WATCH
+   ======================================== */
+
+.ticker-cardio{
+	border:2px solid #ff9b1a;
+	background:
+		linear-gradient(
+			135deg,
+			#4f2900,
+			#9e5200
+		);
+	color:#ff9b1a;
+	box-shadow:
+		0 0 18px rgba(255,155,26,.35);
+
+	animation:
+		cardioPulse 1.8s infinite;
+}
+
+/* ========================================
+   BATTLE PULSE
+   ======================================== */
+
+@keyframes battlePulse{
+
+	0%{
+		box-shadow:
+			0 0 8px rgba(255,215,0,.25);
+	}
+
+	50%{
+		box-shadow:
+			0 0 28px rgba(255,215,0,.75);
+	}
+
+	100%{
+		box-shadow:
+			0 0 8px rgba(255,215,0,.25);
+	}
+}
+
+/* ========================================
+   BODY FLEX
+   ======================================== */
+
+@keyframes bodyFlex{
+
+	0%{
+		transform:rotate(0deg);
+	}
+
+	25%{
+		transform:rotate(-1deg);
+	}
+
+	75%{
+		transform:rotate(1deg);
+	}
+
+	100%{
+		transform:rotate(0deg);
+	}
+}
+
+/* ========================================
+   CARDIO PULSE
+   ======================================== */
+
+@keyframes cardioPulse{
+
+	0%{
+		transform:scale(1);
+	}
+
+	50%{
+		transform:scale(1.02);
+	}
+
+	100%{
+		transform:scale(1);
+	}
+}
+

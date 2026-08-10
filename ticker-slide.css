@@ -35,19 +35,41 @@
 	animation:tickerSlideDetail 10s linear forwards;
 }
 
+.ticker-alert{
+	border-color:#ff3b3b;
+	box-shadow:0 0 20px rgba(255,59,59,.50);
+}
+
+.ticker-alert .ticker-title{
+	color:#ff5c5c;
+	text-shadow:0 0 10px rgba(255,59,59,.60);
+}
+
 .ticker-alert .ticker-slide-headline{
 	background:#ff3b3b;
 	color:#fff;
 }
 
-.ticker-leader .ticker-slide-headline{
-	background:#ffd700;
-	color:#111;
+.ticker-leader{
+	border:2px solid #ffd700;
+	background:
+		linear-gradient(
+			135deg,
+			#463700,
+			#6a5500
+		);
 }
 
-.ticker-biglift .ticker-slide-headline{
-	background:#39ff88;
-	color:#06170c;
+.ticker-biglift{
+	border:2px solid #39ff88;
+	background:
+		linear-gradient(
+			135deg,
+			#10311e,
+			#1d5a36
+		);
+	box-shadow:
+		0 0 22px rgba(57,255,136,.35);
 }
 
 .ticker-closing .ticker-slide-headline{
@@ -119,4 +141,104 @@
 		transform:translateY(0) rotate(0deg);
 		opacity:1;
 	}
+}
+
+/* ========================================
+   BATTLE LINES
+   ======================================== */
+
+.ticker-battle{
+	border:2px solid #ffd700;
+	background:
+		linear-gradient(
+			135deg,
+			#242424,
+			#564000
+		);
+	box-shadow:
+		0 0 20px rgba(255,215,0,.35);
+}
+
+.ticker-battle .ticker-title{
+	color:#ffd700;
+	text-shadow:0 0 10px rgba(255,215,0,.50);
+}
+
+.ticker-battle .ticker-slide-headline{
+	background:#ffd700;
+	color:#111;
+}
+
+/* ========================================
+   BODY MODE
+   ======================================== */
+
+.ticker-body{
+	border:2px solid #42a5ff;
+	background:
+		linear-gradient(
+			135deg,
+			#13233d,
+			#24568d
+		);
+}
+
+.ticker-body .ticker-title{
+	color:#4ea8ff;
+	text-shadow:0 0 10px rgba(78,168,255,.50);
+}
+
+.ticker-body .ticker-slide-headline{
+	background:#4ea8ff;
+	color:#08111c;
+}
+
+/* ========================================
+   CARDIO WATCH
+   ======================================== */
+
+.ticker-cardio{
+	border:2px solid #ff9b1a;
+	background:
+		linear-gradient(
+			135deg,
+			#4f2900,
+			#8b4d00
+		);
+}
+
+.ticker-cardio .ticker-title{
+	color:#ff9800;
+	text-shadow:0 0 10px rgba(255,152,0,.50);
+}
+
+.ticker-cardio .ticker-slide-headline{
+	background:#ff9800;
+	color:#111;
+}
+/* ========================================
+   ACTIVITY
+   ======================================== */
+
+.ticker-activity{
+	border:2px solid #6c7cff;
+	background:
+		linear-gradient(
+			135deg,
+			#1a2147,
+			#2a3163
+		);
+	box-shadow:
+		0 0 18px rgba(108,124,255,.30);
+}
+
+.ticker-activity .ticker-slide-headline{
+	background:#6c7cff;
+	color:#fff;
+}
+
+.ticker-activity .ticker-title{
+	color:#8d99ff;
+	text-shadow:
+		0 0 10px rgba(141,153,255,.45);
 }

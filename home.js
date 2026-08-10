@@ -98,6 +98,8 @@ renderBattleLines();
 		(dates.length === 1 ? '' : 's');
 }
 
+renderLeadChase();
+
 function renderTopMuscleGroups(history){
 
 	const groups = {};
@@ -410,5 +412,108 @@ const rightVolume =
 
 		box.innerHTML =
 			'<div class="card-row-value">Battle Lines unavailable</div>';
+	}
+}
+
+/* ========================================
+   LEAD CHASE
+   ======================================== */
+
+async function renderLeadChase(){
+
+	const box =
+		document.getElementById(
+			'leadChaseList'
+		);
+
+	if(!box){
+		return;
+	}
+
+	try{
+
+		const data =
+			await (
+				await fetch(
+					API +
+					'?action=getLeadChase' +
+					'&user=' +
+					getUserCode() +
+					'&t=' +
+					Date.now()
+				)
+			).json();
+
+		if(!data.length){
+
+			box.innerHTML =
+				`
+				<div class="lead-chase-row">
+					<div class="lead-chase-area">
+						🏆 Leading All Areas
+					</div>
+				</div>
+				`;
+
+			return;
+		}
+
+		let html = '';
+
+		data.forEach((x,index) => {
+
+			let medal = '🎯';
+
+			if(index === 0){
+				medal = '🥇';
+			}
+			else if(index === 1){
+				medal = '🥈';
+			}
+			else if(index === 2){
+				medal = '🥉';
+			}
+
+			html += `
+				<div class="lead-chase-row">
+
+					<div class="lead-chase-left">
+
+						<div class="lead-chase-area">
+							${medal} ${x.WorkoutArea}
+						</div>
+
+						<div class="lead-chase-leader">
+							Leader: ${x.LeaderUserCode}
+						</div>
+
+					</div>
+
+					<div class="lead-chase-gap">
+
+						${Number(
+							x.Difference || 0
+						).toLocaleString()}
+
+						${x.UnitLabel || 'lbs'}
+
+					</div>
+
+				</div>
+			`;
+		});
+
+		box.innerHTML = html;
+
+	}
+	catch(err){
+
+		console.error(
+			'Lead Chase failed',
+			err
+		);
+
+		box.innerHTML =
+			'Unable to load';
 	}
 }

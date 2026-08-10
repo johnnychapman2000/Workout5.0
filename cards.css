@@ -280,3 +280,49 @@
 .status-danger {
 	color: #ef4444;
 }
+
+/* ========================================
+   LEAD CHASE
+   ======================================== */
+
+.lead-chase-list{
+	display:flex;
+	flex-direction:column;
+	gap:10px;
+}
+
+.lead-chase-row{
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	padding:8px 0;
+	border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.lead-chase-row:last-child{
+	border-bottom:none;
+}
+
+.lead-chase-left{
+	display:flex;
+	flex-direction:column;
+	gap:2px;
+}
+
+.lead-chase-area{
+	font-weight:800;
+	font-size:.9rem;
+	color:#fff;
+}
+
+.lead-chase-leader{
+	font-size:.72rem;
+	color:var(--muted);
+}
+
+.lead-chase-gap{
+	font-weight:800;
+	font-size:.85rem;
+	color:#ffb84d;
+	white-space:nowrap;
+}

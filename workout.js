@@ -6,7 +6,16 @@ let CW,CE,saving=false,EXERCISES=[],HISTORY=[];
 
 async function init(){try{
 
-const w=await(await fetch(API+'?action=getCurrentWorkoutDetails')).json();
+const w=await(
+	await fetch(
+		API+
+		'?action=getCurrentWorkoutDetails'+
+		'&user='+
+		getUserCode()+
+		'&t='+
+		Date.now()
+	)
+).json();
 
 
 const p=await(

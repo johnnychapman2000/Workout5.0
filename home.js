@@ -22,10 +22,17 @@ document.querySelector(
 	document.getElementById('navigation').innerHTML =
 		buildNavigation('home');
 
-	const w =
-		await (
-			await fetch(API + '?action=getCurrentWorkout')
-		).json();
+const w =
+	await (
+		await fetch(
+			API +
+			'?action=getCurrentWorkout' +
+			'&user=' +
+			getUserCode() +
+			'&t=' +
+			Date.now()
+		)
+	).json();
 
 	workoutName.innerText = w.PlanName;
 
@@ -71,6 +78,8 @@ const hist =
 	renderTopMuscleGroups(hist);
 
 	renderRecentActivity(hist);
+
+renderBattleLines();
 
 	const dates = [
 		...new Set(
@@ -239,4 +248,167 @@ function formatRecentDate(dateValue){
 	}
 
 	return dateValue;
+}
+
+/* ========================================
+   BATTLE LINES
+   ======================================== */
+
+async function renderBattleLines(){
+
+	const box =
+		document.getElementById(
+			'battleLinesList'
+		);
+
+	if(!box){
+		return;
+	}
+
+	try{
+
+		const data =
+			await (
+				await fetch(
+					API +
+					'?action=getBattleLines' +
+					'&t=' +
+					Date.now()
+				)
+			).json();
+
+		if(!data.length){
+
+			box.innerHTML =
+				'<div class="card-row-value">No battle data yet</div>';
+
+			return;
+		}
+
+		let html =
+			'';
+
+		data.forEach(x => {
+
+			const leader =
+				x.LeaderUserCode || 'TIE';
+
+			const side =
+				leader === 'IRONWOLF'
+					? 'left'
+					: leader === 'TITAN'
+						? 'right'
+						: 'tie';
+
+			const pct =
+				Math.min(
+					100,
+					Number(x.LeadPercent || 0)
+				);
+
+			let leftWidth =
+				0;
+
+			let rightWidth =
+				0;
+
+			if(side === 'left'){
+				leftWidth = pct;
+			}
+
+			if(side === 'right'){
+				rightWidth = pct;
+			}
+
+const unitLabel =
+	x.UnitLabel || 'lbs';
+
+const diffText =
+	side === 'tie'
+		? 'Even'
+		: Number(x.Difference || 0).toLocaleString() +
+			' ' +
+			unitLabel;
+
+const leftVolume =
+	Number(
+		x.LeftScore ||
+		x.LeftVolume ||
+		0
+	).toLocaleString();
+
+const rightVolume =
+	Number(
+		x.RightScore ||
+		x.RightVolume ||
+		0
+	).toLocaleString();
+
+			const diffClass =
+				side === 'left'
+					? 'battle-line-winner-left'
+					: side === 'right'
+						? 'battle-line-winner-right'
+						: 'battle-line-even';
+
+			html += `
+				<div class="battle-line-row">
+
+					<div class="battle-line-top">
+
+						<div class="battle-line-area">
+							${x.WorkoutArea}
+						</div>
+
+						<div class="battle-line-diff ${diffClass}">
+							${diffText}
+						</div>
+
+					</div>
+
+					<div class="battle-line-track">
+
+						<div class="battle-line-center"></div>
+
+						<div
+							class="battle-line-fill left"
+							style="width:${leftWidth}%">
+						</div>
+
+						<div
+							class="battle-line-fill right"
+							style="width:${rightWidth}%">
+						</div>
+
+					</div>
+
+					<div class="battle-line-footer">
+
+						<span>
+							${leftVolume}
+						</span>
+
+						<span>
+							${rightVolume}
+						</span>
+
+					</div>
+
+				</div>
+			`;
+		});
+
+		box.innerHTML =
+			html;
+	}
+	catch(err){
+
+		console.error(
+			'Battle Lines failed:',
+			err
+		);
+
+		box.innerHTML =
+			'<div class="card-row-value">Battle Lines unavailable</div>';
+	}
 }

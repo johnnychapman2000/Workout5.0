@@ -6,53 +6,114 @@ let CW,CE,saving=false,EXERCISES=[],HISTORY=[];
 
 async function init(){try{
 
-const w=await(
-	await fetch(
-		API+
-		'?action=getCurrentWorkoutDetails'+
-		'&user='+
-		getUserCode()+
-		'&t='+
-		Date.now()
-	)
-).json();
+const w =
+	await getCachedData(
+		getProfileCacheKey(
+			CACHE_KEYS.CURRENT_WORKOUT_DETAILS,
+			getUserCode()
+		),
+		async () => {
+
+			return await (
+				await fetch(
+					API +
+					'?action=getCurrentWorkoutDetails' +
+					'&user=' +
+					getUserCode() +
+					'&t=' +
+					Date.now()
+				)
+			).json();
+
+		},
+		15
+	);
 
 
-const p=await(
-	await fetch(
-		API+
-		'?action=getWorkoutProgress'+
-		'&user='+
-		getUserCode()
-	)
-).json();
+const p =
+	await getCachedData(
+		getProfileCacheKey(
+			CACHE_KEYS.CURRENT_WORKOUT_PROGRESS,
+			getUserCode()
+		),
+		async () => {
+
+			return await (
+				await fetch(
+					API +
+					'?action=getWorkoutProgress' +
+					'&user=' +
+					getUserCode()
+				)
+			).json();
+
+		},
+		2
+	);
 
 
-const steps=await(
-	await fetch(
-		API+
-		'?action=getTodaySteps'+
-		'&user='+
-		getUserCode()
-	)
-).json();
+const steps =
+	await getCachedData(
+		getProfileCacheKey(
+			'w6_today_steps',
+			getUserCode()
+		),
+		async () => {
 
-HISTORY=await(
-	await fetch(
-		API+
-		'?action=getWorkoutHistory'+
-		'&user='+
-		getUserCode()
-	)
-).json();
+			return await (
+				await fetch(
+					API +
+					'?action=getTodaySteps' +
+					'&user=' +
+					getUserCode()
+				)
+			).json();
+
+		},
+		2
+	);
+			
+
+HISTORY =
+	await getCachedData(
+		getProfileCacheKey(
+			CACHE_KEYS.WORKOUT_HISTORY,
+			getUserCode()
+		),
+		async () => {
+
+			return await (
+				await fetch(
+					API +
+					'?action=getWorkoutHistory' +
+					'&user=' +
+					getUserCode()
+				)
+			).json();
+
+		},
+		5
+	);
 
 
 	CW=w;
 
 
-EXERCISES=await(
-  await fetch(API+'?action=getExerciseMaster')
-).json();
+EXERCISES =
+	await getCachedData(
+		CACHE_KEYS.EXERCISE_MASTER,
+		async () => {
+
+			return await (
+				await fetch(
+					API +
+					'?action=getExerciseMaster'
+				)
+			).json();
+
+		},
+		1440
+	);	
 
 	document.getElementById('workoutTitle').innerText=
 		w.PlanName;

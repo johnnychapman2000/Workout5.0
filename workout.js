@@ -329,11 +329,39 @@ console.log(
       body:JSON.stringify(payload)
     });
 
-    saveBtn.innerText='Saved ✓';
+saveBtn.innerText='Saved ✓';
 
-    setTimeout(()=>{
-      location.reload();
-    },800);
+clearCache(
+	getProfileCacheKey(
+		CACHE_KEYS.CURRENT_WORKOUT_DETAILS,
+		getUserCode()
+	)
+);
+
+clearCache(
+	getProfileCacheKey(
+		CACHE_KEYS.CURRENT_WORKOUT_PROGRESS,
+		getUserCode()
+	)
+);
+
+clearCache(
+	getProfileCacheKey(
+		CACHE_KEYS.WORKOUT_HISTORY,
+		getUserCode()
+	)
+);
+
+clearCache(
+	getProfileCacheKey(
+		'w6_today_steps',
+		getUserCode()
+	)
+);
+
+setTimeout(()=>{
+	location.reload();
+},800);
 
   }catch(err){
 

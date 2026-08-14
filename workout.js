@@ -451,19 +451,27 @@ console.log(
 );
 
 console.log(
+	'HIGH KNEES CURRENT',
+	currentMonthVolume['High Knees']
+);
+
+console.log(
 	'PREVIOUS MONTH',
 	previousMonthVolume
 );
 
 const attentionScores = [];
 
-Object.keys(workoutHistoryByExercise).forEach(exercise => {
+EXERCISES.forEach(exercise => {
 
-	const current =
-		currentMonthVolume[exercise] || 0;
+	const exerciseName =
+		exercise.ExerciseName;
 
-	const previous =
-		previousMonthVolume[exercise] || 0;
+const current =
+	currentMonthVolume[exerciseName] || 0;
+
+const previous =
+	previousMonthVolume[exerciseName] || 0;
 
 	let score = 0;
 
@@ -488,7 +496,7 @@ else{
 }
 
 attentionScores.push({
-	ExerciseName: exercise,
+	ExerciseName: exerciseName,
 	Current: current,
 	Previous: previous,
 	Score: score
@@ -503,6 +511,17 @@ console.log(
 attentionScores.sort(
 	(a,b) => a.Score - b.Score
 );
+
+attentionScores
+	.slice(0,10)
+	.forEach(x =>
+		console.log(
+			'BOTTOM',
+			x.ExerciseName,
+			x.Score
+		)
+	);
+
 
 attentionScores.slice(0,5).forEach(x =>
 	console.log(
@@ -716,6 +735,10 @@ clearCache(
 		CACHE_KEYS.WORKOUT_HISTORY,
 		getUserCode()
 	)
+);
+
+console.log(
+	'WORKOUT HISTORY CACHE CLEARED'
 );
 
 clearCache(

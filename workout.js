@@ -2,7 +2,7 @@
    WORKOUT PAGE LOGIC
    ======================================== */
 
-let CW,CE,saving=false,EXERCISES=[],HISTORY=[];
+let CW,CE,saving=false,EXERCISES=[],HISTORY=[],LEADCHASE=[];
 
 async function init(){try{
 
@@ -98,6 +98,23 @@ HISTORY =
 
 	CW=w;
 
+LEADCHASE =
+	await (
+		await fetch(
+			API +
+			'?action=getLeadChase' +
+			'&user=' +
+			getUserCode() +
+			'&t=' +
+			Date.now()
+		)
+	).json();
+
+console.log(
+	'Lead Chase',
+	LEADCHASE
+);
+
 
 EXERCISES =
 	await getCachedData(
@@ -183,6 +200,355 @@ if(!steps.completed){
 
 
 w.Exercises.filter(x=>!done.includes(String(x.ExerciseID))).forEach(e=>h+=row(e,false));
+
+const leadArea =
+	LEADCHASE.length
+		? LEADCHASE[0].WorkoutArea
+		: 'None';
+
+const chaseExercises =
+	EXERCISES.filter(
+		x => x.WorkoutArea === leadArea
+	);
+
+console.log(
+	'Lead Chase Exercises',
+	chaseExercises
+);
+
+const historyExercises =
+	chaseExercises.filter(e =>
+		HISTORY.some(h =>
+			String(h.ExerciseID) === String(e.ExerciseID)
+		)
+	);
+
+const chasePlan = [];
+
+historyExercises.forEach(exercise => {
+
+	const logs =
+		HISTORY.filter(h =>
+			String(h.ExerciseName).trim() ===
+			String(exercise.ExerciseName).trim()
+		);
+
+	if(logs.length){
+
+		const volume =
+			Number(logs[0].Sets || 0) *
+			Number(logs[0].Reps || 0) *
+			Number(logs[0].Weight || 0);
+
+		chasePlan.push({
+			ExerciseName: exercise.ExerciseName,
+			Sets: logs[0].Sets,
+			Reps: logs[0].Reps,
+			Weight: logs[0].Weight,
+			Volume: volume
+		});
+	}
+
+});
+
+chasePlan.sort(
+	(a,b) => b.Volume - a.Volume
+);
+
+console.log(
+	'CHASE PLAN SORTED',
+	chasePlan
+);
+
+let chaseNeeded =
+	LEADCHASE.length
+		? Number(
+			LEADCHASE[0].Difference || 0
+		)
+		: 0;
+
+let chaseRunningTotal = 0;
+
+const recommendedPlan = [];
+
+for(const item of chasePlan){
+
+	recommendedPlan.push(item);
+
+	chaseRunningTotal += item.Volume;
+
+	if(chaseRunningTotal >= chaseNeeded){
+		break;
+	}
+
+}
+
+console.log(
+	'RECOMMENDED PLAN',
+	recommendedPlan
+);
+
+console.log(
+	'PLAN TOTAL',
+	chaseRunningTotal
+);
+
+
+console.log(
+	'Lead Chase History Exercises',
+	historyExercises
+);
+
+historyExercises.forEach(x =>
+	console.log(
+		'CHASE EXERCISE',
+		x.ExerciseName
+	)
+);
+
+historyExercises.forEach(exercise => {
+
+	const logs =
+		HISTORY.filter(h =>
+			String(h.ExerciseName).trim() ===
+			String(exercise.ExerciseName).trim()
+		);
+
+	console.log(
+		'MATCH TEST',
+		exercise.ExerciseName,
+		logs.length
+	);
+
+	if(logs.length){
+
+const volume =
+	Number(logs[0].Sets || 0) *
+	Number(logs[0].Reps || 0) *
+	Number(logs[0].Weight || 0);
+
+console.log(
+	'CHASE PLAN',
+	exercise.ExerciseName,
+	volume
+);
+
+
+	}
+
+});
+
+const chaseGap =
+	LEADCHASE.length
+		? Number(
+			LEADCHASE[0].Difference || 0
+		).toLocaleString()
+		: '0';
+
+const leadAmount =
+	chaseRunningTotal -
+	Number(
+		LEADCHASE[0]?.Difference || 0
+	);
+
+const chaseLeader =
+	LEADCHASE.length
+		? LEADCHASE[0].LeaderUserCode
+		: '';
+
+h+='<div class=section>🎯 Lead Chase - ' + leadArea + '</div>';
+h+='<div class=section style="padding-top:6px;color:#4caf50;">✅ Can Take Lead Today (+' + leadAmount.toLocaleString() + ' lbs Lead)</div>';
+
+recommendedPlan.forEach(item => {
+
+	h+=`
+		<div class=row>
+			<div>${item.ExerciseName}</div>
+			<div class=target>
+				${item.Sets}x${item.Reps}x${item.Weight}
+			</div>
+			<div class='dot red'></div>
+		</div>
+	`;
+
+});
+
+const workoutHistoryByExercise = {};
+
+HISTORY.forEach(log => {
+
+	if(!log.ExerciseName){
+		return;
+	}
+
+	if(!workoutHistoryByExercise[log.ExerciseName]){
+		workoutHistoryByExercise[log.ExerciseName] = 0;
+	}
+
+	workoutHistoryByExercise[log.ExerciseName] +=
+		Number(log.Volume || 0);
+
+});
+
+console.log(
+	'EXERCISE VOLUMES',
+	workoutHistoryByExercise
+);
+
+const currentMonth = new Date().getMonth();
+const currentYear = new Date().getFullYear();
+
+const currentMonthVolume = {};
+const previousMonthVolume = {};
+
+HISTORY.forEach(log => {
+
+	if(!log.ExerciseName){
+		return;
+	}
+
+	const logDate = new Date(log.WorkoutDate);
+
+	const logMonth = logDate.getMonth();
+	const logYear = logDate.getFullYear();
+
+	if(
+		logMonth === currentMonth &&
+		logYear === currentYear
+	){
+
+		if(!currentMonthVolume[log.ExerciseName]){
+			currentMonthVolume[log.ExerciseName] = 0;
+		}
+
+		currentMonthVolume[log.ExerciseName] +=
+			Number(log.Volume || 0);
+
+	}
+
+	const prevDate = new Date();
+	prevDate.setMonth(prevDate.getMonth() - 1);
+
+	if(
+		logMonth === prevDate.getMonth() &&
+		logYear === prevDate.getFullYear()
+	){
+
+		if(!previousMonthVolume[log.ExerciseName]){
+			previousMonthVolume[log.ExerciseName] = 0;
+		}
+
+		previousMonthVolume[log.ExerciseName] +=
+			Number(log.Volume || 0);
+
+	}
+
+});
+
+console.log(
+	'CURRENT MONTH',
+	currentMonthVolume
+);
+
+console.log(
+	'PREVIOUS MONTH',
+	previousMonthVolume
+);
+
+const attentionScores = [];
+
+Object.keys(workoutHistoryByExercise).forEach(exercise => {
+
+	const current =
+		currentMonthVolume[exercise] || 0;
+
+	const previous =
+		previousMonthVolume[exercise] || 0;
+
+	let score = 0;
+
+if(previous === 0){
+
+	score =
+		current > 0
+			? 100
+			: -100;
+
+}
+else{
+
+	const expected =
+		previous * monthProgress;
+
+	score =
+		Math.round(
+			((current - expected) / expected) * 100
+		);
+
+}
+
+attentionScores.push({
+	ExerciseName: exercise,
+	Current: current,
+	Previous: previous,
+	Score: score
+});
+});
+
+console.log(
+	'ATTENTION SCORES',
+	attentionScores
+);
+
+attentionScores.sort(
+	(a,b) => a.Score - b.Score
+);
+
+attentionScores.slice(0,5).forEach(x =>
+	console.log(
+		'ATTENTION',
+		x.ExerciseName,
+		'Current:',
+		x.Current,
+		'Previous:',
+		x.Previous,
+		'Score:',
+		x.Score
+	)
+);
+
+const today = new Date();
+
+const daysInMonth =
+	new Date(
+		today.getFullYear(),
+		today.getMonth() + 1,
+		0
+	).getDate();
+
+const monthProgress =
+	today.getDate() / daysInMonth;
+
+console.log(
+	'MONTH PROGRESS',
+	Math.round(monthProgress * 100) + '%'
+);
+
+h+='<div class=section>⭐ Needs Attention</div>';
+
+attentionScores
+	.slice(0,2)
+	.forEach(item => {
+
+		h+=`
+			<div class=row>
+				<div>${item.ExerciseName}</div>
+				<div class=target>${item.Score}%</div>
+				<div class='dot red'></div>
+			</div>
+		`;
+
+	});
 
 h+='<div class=section>Completed</div>';
 if(steps.completed){

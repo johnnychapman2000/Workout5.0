@@ -131,3 +131,15 @@
 .battle-line-even{
 	color:var(--muted);
 }
+
+.battle-line-total{
+
+	text-align:center;
+
+	font-size:11px;
+
+	color:#9ca3af;
+
+	margin-top:4px;
+
+}

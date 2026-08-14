@@ -133,7 +133,7 @@ battle: [
 },
 {
   headline:'MONTHLY WAR',
-  text:'The {AREA} battle remains active. Gap: {DIFFERENCE}.'
+text:'{USER} leads {RIVAL} in {AREA} by {DIFFERENCE} {UNIT}. Total Volume: {TOTALVOLUME} {UNIT}.'
 },
 {
   headline:'LIVE SCORE',
@@ -279,21 +279,25 @@ const data =
 					x.type || 'alert';
 
 				return {
-					type:type,
-					icon:getTickerIcon(
-						type
-					),
-					user:x.UserCode || 'UNKNOWN',
-					rival:x.RivalUserCode || 'the family',
-					exercise:x.ExerciseName || 'a workout',
-					area:x.WorkoutArea || x.PlanName || 'workouts',
-					volume:Number(
-						x.Volume || 0
-					).toLocaleString(),
-					difference:Number(
-						x.Difference || 0
-					).toLocaleString()
-				};
+	type:type,
+	icon:getTickerIcon(
+		type
+	),
+	user:x.UserCode || 'UNKNOWN',
+	rival:x.RivalUserCode || 'the family',
+	exercise:x.ExerciseName || 'a workout',
+	area:x.WorkoutArea || x.PlanName || 'workouts',
+	volume:Number(
+		x.Volume || 0
+	).toLocaleString(),
+	difference:Number(
+		x.Difference || 0
+	).toLocaleString(),
+	totalVolume:Number(
+		x.TotalVolume || 0
+	).toLocaleString(),
+	unit:x.UnitLabel || ''
+};
 
 			});
 
@@ -460,7 +464,16 @@ function fillTickerTemplate(text,event){
 		.replaceAll(
 			'{DIFFERENCE}',
 			event.difference
+		)
+		.replaceAll(
+			'{TOTALVOLUME}',
+			event.totalVolume || '0'
+		)
+		.replaceAll(
+			'{UNIT}',
+			event.unit || ''
 		);
+
 }
 
 function getRandomIndex(max){

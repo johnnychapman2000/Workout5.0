@@ -110,12 +110,6 @@ LEADCHASE =
 		)
 	).json();
 
-console.log(
-	'Lead Chase',
-	LEADCHASE
-);
-
-
 EXERCISES =
 	await getCachedData(
 		CACHE_KEYS.EXERCISE_MASTER,
@@ -189,6 +183,7 @@ prog.innerText=
 	' Complete';
 
 let done=p.CompletedExerciseIDs||[];
+
 let h='<div class=section>Remaining</div>';
 
 if(!steps.completed){
@@ -223,6 +218,17 @@ const historyExercises =
 		)
 	);
 
+const completedTodayIds =
+	new Set(
+		HISTORY
+			.filter(h =>
+				String(h.WorkoutDate).substring(0,10) === getToday()
+			)
+			.map(h =>
+				String(h.ExerciseID)
+			)
+	);
+
 const chasePlan = [];
 
 historyExercises.forEach(exercise => {
@@ -233,26 +239,50 @@ historyExercises.forEach(exercise => {
 			String(exercise.ExerciseName).trim()
 		);
 
-	if(logs.length){
+if(logs.length){
 
-		const volume =
+	let volume = 0;
+
+	if(Number(logs[0].Weight || 0) > 0){
+
+		volume =
 			Number(logs[0].Sets || 0) *
 			Number(logs[0].Reps || 0) *
 			Number(logs[0].Weight || 0);
 
-		chasePlan.push({
-			ExerciseName: exercise.ExerciseName,
-			Sets: logs[0].Sets,
-			Reps: logs[0].Reps,
-			Weight: logs[0].Weight,
-			Volume: volume
-		});
 	}
+	else{
+
+		volume =
+			Number(logs[0].Sets || 0) *
+			Number(logs[0].Reps || 0);
+
+	}
+
+chasePlan.push({
+	ExerciseID: exercise.ExerciseID,
+	ExerciseName: exercise.ExerciseName,
+	Sets: logs[0].Sets,
+	Reps: logs[0].Reps,
+	Weight: logs[0].Weight,
+	Volume: volume
+});
+}
 
 });
 
 chasePlan.sort(
 	(a,b) => b.Volume - a.Volume
+);
+
+console.log(
+	'CHASE PLAN COUNT',
+	chasePlan.length
+);
+
+console.log(
+	'CHASE PLAN SORTED',
+	chasePlan
 );
 
 console.log(
@@ -273,31 +303,55 @@ const recommendedPlan = [];
 
 for(const item of chasePlan){
 
+	if(
+		completedTodayIds.has(
+			String(item.ExerciseID)
+		)
+	){
+		continue;
+	}
+
 	recommendedPlan.push(item);
 
 	chaseRunningTotal += item.Volume;
 
-	if(chaseRunningTotal >= chaseNeeded){
+	if(
+		chaseRunningTotal >= chaseNeeded ||
+		recommendedPlan.length >= 3
+	){
 		break;
 	}
 
 }
 
-console.log(
-	'RECOMMENDED PLAN',
-	recommendedPlan
-);
+const remainingExercises =
+	chaseExercises.filter(x =>
+		!recommendedPlan.some(r =>
+			String(r.ExerciseName).trim() ===
+			String(x.ExerciseName).trim()
+		) &&
+		!completedTodayIds.has(
+			String(x.ExerciseID)
+		)
+	);
 
-console.log(
-	'PLAN TOTAL',
-	chaseRunningTotal
-);
+remainingExercises.forEach(exercise => {
 
+	if(recommendedPlan.length >= 3){
+		return;
+	}
 
-console.log(
-	'Lead Chase History Exercises',
-	historyExercises
-);
+	recommendedPlan.push({
+		ExerciseID:exercise.ExerciseID,
+		ExerciseName:exercise.ExerciseName,
+		Sets:'',
+		Reps:'',
+		Weight:'',
+		Volume:0
+	});
+
+});
+
 
 historyExercises.forEach(x =>
 	console.log(
@@ -314,25 +368,12 @@ historyExercises.forEach(exercise => {
 			String(exercise.ExerciseName).trim()
 		);
 
-	console.log(
-		'MATCH TEST',
-		exercise.ExerciseName,
-		logs.length
-	);
-
 	if(logs.length){
 
 const volume =
 	Number(logs[0].Sets || 0) *
 	Number(logs[0].Reps || 0) *
 	Number(logs[0].Weight || 0);
-
-console.log(
-	'CHASE PLAN',
-	exercise.ExerciseName,
-	volume
-);
-
 
 	}
 
@@ -351,13 +392,32 @@ const leadAmount =
 		LEADCHASE[0]?.Difference || 0
 	);
 
+const canTakeLead =
+	leadAmount >= 0;
+
 const chaseLeader =
 	LEADCHASE.length
 		? LEADCHASE[0].LeaderUserCode
 		: '';
 
+const chaseUnit =
+	LEADCHASE.length
+		? LEADCHASE[0].UnitLabel || 'lbs'
+		: 'lbs';
+
 h+='<div class=section>🎯 Lead Chase - ' + leadArea + '</div>';
-h+='<div class=section style="padding-top:6px;color:#4caf50;">✅ Can Take Lead Today (+' + leadAmount.toLocaleString() + ' lbs Lead)</div>';
+h+='<div class=section style="padding-top:6px;color:#4caf50;">' +
+	(
+		canTakeLead
+			? '✅ Can Take Lead Today (+' +
+			  leadAmount.toLocaleString() +
+			  ' ' + chaseUnit + ' Lead)'
+			: '⚠ After Workout: ' +
+  Math.abs(leadAmount).toLocaleString() +
+  ' ' + chaseUnit + ' Behind'
+
+	) +
+	'</div>';
 
 recommendedPlan.forEach(item => {
 
@@ -365,7 +425,10 @@ recommendedPlan.forEach(item => {
 		<div class=row>
 			<div>${item.ExerciseName}</div>
 			<div class=target>
-				${item.Sets}x${item.Reps}x${item.Weight}
+				${item.Weight
+	? `${item.Sets}x${item.Reps}x${item.Weight}`
+	: `${item.Sets}x${item.Reps}`
+}
 			</div>
 			<div class='dot red'></div>
 		</div>
@@ -389,11 +452,6 @@ HISTORY.forEach(log => {
 		Number(log.Volume || 0);
 
 });
-
-console.log(
-	'EXERCISE VOLUMES',
-	workoutHistoryByExercise
-);
 
 const currentMonth = new Date().getMonth();
 const currentYear = new Date().getFullYear();
@@ -445,20 +503,7 @@ HISTORY.forEach(log => {
 
 });
 
-console.log(
-	'CURRENT MONTH',
-	currentMonthVolume
-);
 
-console.log(
-	'HIGH KNEES CURRENT',
-	currentMonthVolume['High Knees']
-);
-
-console.log(
-	'PREVIOUS MONTH',
-	previousMonthVolume
-);
 
 const attentionScores = [];
 
@@ -503,10 +548,6 @@ attentionScores.push({
 });
 });
 
-console.log(
-	'ATTENTION SCORES',
-	attentionScores
-);
 
 attentionScores.sort(
 	(a,b) => a.Score - b.Score
@@ -570,11 +611,61 @@ attentionScores
 	});
 
 h+='<div class=section>Completed</div>';
+
 if(steps.completed){
   h+=`<div class=row><div>Steps</div><div class=target>${steps.steps}</div><div class='dot green'></div></div>`;
 }
 
-w.Exercises.filter(x=>done.includes(String(x.ExerciseID))).forEach(e=>h+=row(e,true));list.innerHTML=h;}
+const completedToday =
+	HISTORY.filter(x =>
+		String(x.WorkoutDate).substring(0,10) === getToday()
+	);
+
+const renderedIds = new Set();
+
+w.Exercises
+	.filter(x => done.includes(String(x.ExerciseID)))
+	.forEach(e => {
+		renderedIds.add(String(e.ExerciseID));
+		h += row(e,true);
+	});
+
+completedToday.forEach(log => {
+
+	if(
+		renderedIds.has(
+			String(log.ExerciseID)
+		)
+	){
+		return;
+	}
+
+	if(
+		String(log.ExerciseName) === 'Steps'
+	){
+		return;
+	}
+
+	renderedIds.add(
+		String(log.ExerciseID)
+	);
+
+	h += `
+		<div class=row>
+			<div>${log.ExerciseName}</div>
+			<div class=target>
+				${log.Weight
+					? `${log.Sets}×${log.Reps}×${log.Weight}`
+					: `${log.Sets}×${log.Reps}`
+				}
+			</div>
+			<div class='dot green'></div>
+		</div>
+	`;
+});
+
+list.innerHTML=h;
+}
 
 catch(e){
   console.error(e);
@@ -611,10 +702,12 @@ function row(e,c){
 
 const log=HISTORY.find(x=>
 	String(x.ExerciseID)===String(e.ExerciseID) &&
-	String(x.PlanName).trim()===String(CW.PlanName).trim() &&
 	String(x.WorkoutDate).substring(0,10)===getToday()
 );
 
+if(e.ExerciseName === 'Rear Deltoid'){
+
+}
 		if(log){
 
 			if(log.Weight){
@@ -627,6 +720,10 @@ const log=HISTORY.find(x=>
 		}
 
 	}
+
+if(c){
+
+}
 
 	return `<div class=row onclick='openEx(${e.ExerciseID})'>
 		<div>${e.ExerciseName}</div>
@@ -704,11 +801,6 @@ async function saveExercise(){
 
   try{
 
-console.log(
-	'SAVE PAYLOAD',
-	payload
-);
-
     const response=await fetch(API,{
       method:'POST',
       body:JSON.stringify(payload)
@@ -735,10 +827,6 @@ clearCache(
 		CACHE_KEYS.WORKOUT_HISTORY,
 		getUserCode()
 	)
-);
-
-console.log(
-	'WORKOUT HISTORY CACHE CLEARED'
 );
 
 clearCache(

@@ -422,19 +422,20 @@ h+='<div class=section style="padding-top:6px;color:#4caf50;">' +
 recommendedPlan.forEach(item => {
 
 	h+=`
-		<div class=row>
+		<div class=row onclick='openEx(${item.ExerciseID})'>
 			<div>${item.ExerciseName}</div>
 			<div class=target>
 				${item.Weight
-	? `${item.Sets}x${item.Reps}x${item.Weight}`
-	: `${item.Sets}x${item.Reps}`
-}
+					? `${item.Sets}x${item.Reps}x${item.Weight}`
+					: `${item.Sets}x${item.Reps}`
+				}
 			</div>
 			<div class='dot red'></div>
 		</div>
 	`;
 
 });
+
 
 const workoutHistoryByExercise = {};
 
@@ -553,6 +554,8 @@ attentionScores.sort(
 	(a,b) => a.Score - b.Score
 );
 
+
+
 attentionScores
 	.slice(0,10)
 	.forEach(x =>
@@ -596,12 +599,25 @@ console.log(
 
 h+='<div class=section>⭐ Needs Attention</div>';
 
+const exerciseLookup = {};
+
+EXERCISES.forEach(ex => {
+	exerciseLookup[ex.ExerciseName] = ex;
+});
+
 attentionScores
 	.slice(0,2)
 	.forEach(item => {
 
+		const ex =
+			exerciseLookup[item.ExerciseName];
+
+		if(!ex){
+			return;
+		}
+
 		h+=`
-			<div class=row>
+			<div class=row onclick='openEx(${ex.ExerciseID})'>
 				<div>${item.ExerciseName}</div>
 				<div class=target>${item.Score}%</div>
 				<div class='dot red'></div>
@@ -733,9 +749,24 @@ if(c){
 }
 
 function openEx(id){
-	CE=CW.Exercises.find(x=>x.ExerciseID==id);
-	ename.innerText=CE.ExerciseName;
 
+	CE =
+		CW.Exercises.find(
+			x => String(x.ExerciseID) === String(id)
+		);
+
+	if(!CE){
+		CE =
+			EXERCISES.find(
+				x => String(x.ExerciseID) === String(id)
+			);
+	}
+
+	if(!CE){
+		return;
+	}
+
+	ename.innerText = CE.ExerciseName;
 	sets.value='';
   	reps.value='';
   	weight.value='';

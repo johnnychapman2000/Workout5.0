@@ -79,7 +79,8 @@ const hist =
 
 	renderRecentActivity(hist);
 
-renderBattleLines();
+//renderBattleLines();
+renderBattleLines2();
 
 	const dates = [
 		...new Set(
@@ -252,15 +253,15 @@ function formatRecentDate(dateValue){
 	return dateValue;
 }
 
-/* ========================================
-   BATTLE LINES
-   ======================================== */
 
-async function renderBattleLines(){
+/* ========================================
+   BATTLE LINES 2
+   ======================================== */
+async function renderBattleLines2(){
 
 	const box =
 		document.getElementById(
-			'battleLinesList'
+			'battleLinesList2'
 		);
 
 	if(!box){
@@ -274,6 +275,8 @@ async function renderBattleLines(){
 				await fetch(
 					API +
 					'?action=getBattleLines' +
+					'&user=' +
+					getUserCode() +
 					'&t=' +
 					Date.now()
 				)
@@ -287,32 +290,38 @@ async function renderBattleLines(){
 			return;
 		}
 
-		let html =
-			'';
+		let html = '';
 
 		data.forEach(x => {
 
 			const leader =
 				x.LeaderUserCode || 'TIE';
 
+			const leftUser =
+				x.LeftUserCode ||
+				getUserCode();
+
+			const rightUser =
+				x.RightUserCode ||
+				'TARGET';
+
 			const side =
-				leader === 'IRONWOLF'
-					? 'left'
-					: leader === 'TITAN'
-						? 'right'
+				leader === rightUser
+					? 'right'
+					: leader === leftUser
+						? 'left'
 						: 'tie';
 
 			const pct =
 				Math.min(
 					100,
-					Number(x.LeadPercent || 0)
+					Number(
+						x.LeadPercent || 0
+					)
 				);
 
-			let leftWidth =
-				0;
-
-			let rightWidth =
-				0;
+			let leftWidth = 0;
+			let rightWidth = 0;
 
 			if(side === 'left'){
 				leftWidth = pct;
@@ -322,55 +331,6 @@ async function renderBattleLines(){
 				rightWidth = pct;
 			}
 
-const unitLabel =
-	x.UnitLabel || 'lbs';
-
-const diffText =
-	side === 'tie'
-		? 'Even'
-		: Number(x.Difference || 0).toLocaleString() +
-			' ' +
-			unitLabel;
-
-const leftVolume =
-	Number(
-		x.LeftScore ||
-		x.LeftVolume ||
-		0
-	).toLocaleString();
-
-const rightVolume =
-	Number(
-		x.RightScore ||
-		x.RightVolume ||
-		0
-	).toLocaleString();
-
-const monthlyLeftTotal =
-	Number(
-		x.MonthlyLeftTotal || 0
-	).toLocaleString();
-
-const monthlyRightTotal =
-	Number(
-		x.MonthlyRightTotal || 0
-	).toLocaleString();
-
-const monthlyTotal =
-	Number(x.MonthlyLeftTotal || 0) +
-	Number(x.MonthlyRightTotal || 0);
-
-const monthlyLeftWidth =
-	monthlyTotal
-		? (Number(x.MonthlyLeftTotal || 0) / monthlyTotal) * 100
-		: 50;
-
-const monthlyRightWidth =
-	monthlyTotal
-		? (Number(x.MonthlyRightTotal || 0) / monthlyTotal) * 100
-		: 50;
-
-
 			const diffClass =
 				side === 'left'
 					? 'battle-line-winner-left'
@@ -378,152 +338,196 @@ const monthlyRightWidth =
 						? 'battle-line-winner-right'
 						: 'battle-line-even';
 
-html += `
-	<div class="battle-line-row">
+			const diffText =
+				side === 'tie'
+					? 'Even'
+					: Number(
+						x.Difference || 0
+					).toLocaleString() +
+						' ' +
+						(x.UnitLabel || 'pts');
 
-		<div class="battle-line-top">
+			const leftVolume =
+				Number(
+					x.LeftScore ||
+					x.LeftVolume ||
+					0
+				).toLocaleString();
 
-			<div class="battle-line-area">
-				${x.WorkoutArea}
-			</div>
+			const rightVolume =
+				Number(
+					x.RightScore ||
+					x.RightVolume ||
+					0
+				).toLocaleString();
 
-			<div class="battle-line-diff ${diffClass}">
-				${diffText}
-			</div>
+			html += `
+				<div class="battle-line-row">
 
-		</div>
+					<div class="battle-line-top">
 
-		<div class="battle-line-track">
+						<div class="battle-line-area">
+							${x.WorkoutArea}
+						</div>
 
-			<div class="battle-line-center"></div>
+						<div class="battle-line-diff ${diffClass}">
+							${diffText}
+						</div>
 
-			<div
-				class="battle-line-fill left"
-				style="width:${leftWidth}%">
-			</div>
+					</div>
 
-			<div
-				class="battle-line-fill right"
-				style="width:${rightWidth}%">
-			</div>
+					<div class="battle-line-track">
 
-		</div>
+						<div class="battle-line-center"></div>
 
-		<div class="battle-line-footer">
+						<div
+							class="battle-line-fill left"
+							style="width:${leftWidth}%">
+						</div>
 
-			<span>
-				${leftVolume}
-			</span>
+						<div
+							class="battle-line-fill right"
+							style="width:${rightWidth}%">
+						</div>
 
-			<span>
-				${rightVolume}
-			</span>
+					</div>
 
-		</div>
+					<div class="battle-line-footer">
 
-	</div>
-`;
+						<span>
+							${leftUser} ${leftVolume}
+						</span>
+
+						<span>
+							${rightUser} ${rightVolume}
+						</span>
+
+					</div>
+
+				</div>
+			`;
 
 		});
 
-if(data.length){
+		/* ========================================
+		   TOTAL VOLUME
+		   ======================================== */
 
-	const monthlyLeftTotal =
-		Number(
-			data[0].MonthlyLeftTotal || 0
-		).toLocaleString();
+		const totalLeftUser =
+			data[0].LeftUserCode ||
+			getUserCode();
 
-	const monthlyRightTotal =
-		Number(
-			data[0].MonthlyRightTotal || 0
-		).toLocaleString();
+		const totalRightUser =
+			data[0].RightUserCode ||
+			'TARGET';
 
-	const grandTotal =
-		Number(data[0].MonthlyLeftTotal || 0) +
-		Number(data[0].MonthlyRightTotal || 0);
+		const leftTotal =
+			Number(
+				data[0].MonthlyLeftTotal || 0
+			);
 
-let leftPct = 0;
-let rightPct = 0;
+		const rightTotal =
+			Number(
+				data[0].MonthlyRightTotal || 0
+			);
 
-const leftTotal =
-	Number(data[0].MonthlyLeftTotal || 0);
+		const monthlyLeftTotal =
+			leftTotal.toLocaleString();
 
-const rightTotal =
-	Number(data[0].MonthlyRightTotal || 0);
+		const monthlyRightTotal =
+			rightTotal.toLocaleString();
 
-const diff =
-	Math.abs(leftTotal - rightTotal);
+		const diff =
+			Math.abs(
+				leftTotal - rightTotal
+			);
 
-const total =
-	leftTotal + rightTotal;
+		const total =
+			leftTotal + rightTotal;
 
-const leadPct =
-	total
-		? Math.min(
-			100,
-			Math.round((diff / total) * 100)
-		)
-		: 0;
+		const leadPct =
+			total
+				? Math.min(
+					100,
+					Math.round(
+						(diff / total) * 100
+					)
+				)
+				: 0;
 
-if(leftTotal > rightTotal){
-	leftPct = leadPct;
-}
+		let leftPct = 0;
+		let rightPct = 0;
 
-if(rightTotal > leftTotal){
-	rightPct = leadPct;
-}
+		if(leftTotal > rightTotal){
+			leftPct = leadPct;
+		}
 
+		if(rightTotal > leftTotal){
+			rightPct = leadPct;
+		}
 
-	html += `
-		<div class="battle-line-row">
+		const totalDiffClass =
+			leftTotal > rightTotal
+				? 'battle-line-winner-left'
+				: rightTotal > leftTotal
+					? 'battle-line-winner-right'
+					: 'battle-line-even';
 
-			<div class="battle-line-top">
+		html += `
+			<div class="battle-line-row">
 
-				<div class="battle-line-area">
-					TOTAL VOLUME
+				<div class="battle-line-top">
+
+					<div class="battle-line-area">
+						TOTAL VOLUME
+					</div>
+
+					<div class="battle-line-diff ${totalDiffClass}">
+						${diff.toLocaleString()} pts
+					</div>
+
+				</div>
+
+				<div class="battle-line-track">
+
+					<div class="battle-line-center"></div>
+
+					<div
+						class="battle-line-fill left"
+						style="width:${leftPct}%">
+					</div>
+
+					<div
+						class="battle-line-fill right"
+						style="width:${rightPct}%">
+					</div>
+
+				</div>
+
+				<div class="battle-line-footer">
+
+					<span>
+						${totalLeftUser}
+						${monthlyLeftTotal}
+					</span>
+
+					<span>
+						${totalRightUser}
+						${monthlyRightTotal}
+					</span>
+
 				</div>
 
 			</div>
+		`;
 
-			<div class="battle-line-track">
+		box.innerHTML = html;
 
-				<div class="battle-line-center"></div>
-
-				<div
-					class="battle-line-fill left"
-					style="width:${leftPct}%">
-				</div>
-
-				<div
-					class="battle-line-fill right"
-					style="width:${rightPct}%">
-				</div>
-
-			</div>
-
-			<div class="battle-line-footer">
-
-				<span>
-					${monthlyLeftTotal}
-				</span>
-
-				<span>
-					${monthlyRightTotal}
-				</span>
-
-			</div>
-
-		</div>
-	`;
-}
-
-		box.innerHTML =
-			html;
 	}
 	catch(err){
 
 		console.error(
-			'Battle Lines failed:',
+			'Battle Lines 2 failed:',
 			err
 		);
 
@@ -531,7 +535,6 @@ if(rightTotal > leftTotal){
 			'<div class="card-row-value">Battle Lines unavailable</div>';
 	}
 }
-
 
 /* ========================================
    LEAD CHASE

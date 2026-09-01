@@ -86,23 +86,115 @@
 
 </div>
 
-	<div class="card">
+<!-- ======================================== -->
+<!-- STREAK + MONTHLY VOLUME ROW -->
+<!-- ======================================== -->
 
-		<div class="card-header">
-			<div class="card-title">
-				Current Streak
-			</div>
-		</div>
-		<div class="kpi">
+<div class="stats-row">
 
-			<div id="streak" class="kpi-value">
-				🔥 0 Days
-			</div>
-			<div class="kpi-label">
-				Based on workout history
-			</div>
-		</div>
+    <!-- Current Streak -->
+    <div class="card half-card">
+
+        <div class="card-header">
+            <div class="card-title">
+                🔥 Current Streak
+            </div>
+        </div>
+
+        <div class="kpi">
+
+            <div id="streak" class="kpi-value">
+                0 Days
+            </div>
+
+            <div class="kpi-label">
+                Based on workout history
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Monthly Volume -->
+    <div class="card half-card">
+
+        <div class="card-header">
+            <div class="card-title">
+                📊 Monthly Volume
+            </div>
+        </div>
+
+        <div class="kpi">
+
+            <div id="monthVolume" class="kpi-value">
+                0 lbs
+            </div>
+
+            <div id="monthCount" class="kpi-label">
+                0 Exercises Logged
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ======================================== -->
+<!-- PREVIOUS MONTH RESULTS -->
+<!-- ======================================== -->
+
+<div class="card previous-month-card">
+
+    <div class="card-header">
+        <div class="card-title">
+            🏆 Previous Month Results
+        </div>
+    </div>
+
+    <div id="previousMonthResults">
+
+        <div class="kpi-value">
+            Loading...
+        </div>
+
+        <div class="kpi-label">
+            Previous Month Champion
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ======================================== -->
+<!-- PERSONAL MONTH COMPARISON -->
+<!-- ======================================== -->
+
+<div class="card personal-month-card">
+
+    <div class="card-header">
+        <div class="card-title">
+            ⚔️ My Previous vs Current Month
+        </div>
+    </div>
+
+    <div id="personalMonthComparison">
+
+	<div
+		id="previousMonthWinner" class="kpi-value">
+    		Loading...
 	</div>
+
+        <div class="kpi-label">
+            Current Month Performance
+        </div>
+
+    </div>
+
+</div>
+<!-- ======================================== -->
+
+
 	<div class="card">
 
 		<div class="card-header">
@@ -125,31 +217,6 @@
 
 	</div>
 
-	<div class="card">
-
-		<div class="card-header">
-			<div class="card-title">
-				Monthly Volume
-			</div>
-		</div>
-
-		<div class="kpi">
-
-			<div
-				id="monthVolume"
-				class="kpi-value">
-				0 lbs
-			</div>
-
-			<div
-				id="monthCount"
-				class="kpi-label">
-				0 Exercises Logged
-			</div>
-
-		</div>
-
-	</div>
 	<div class="card">
 
 		<div class="card-header">

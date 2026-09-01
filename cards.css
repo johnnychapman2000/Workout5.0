@@ -326,3 +326,16 @@
 	color:#ffb84d;
 	white-space:nowrap;
 }
+
+/* ======================================== */
+/* STATS ROW */
+/* ======================================== */
+
+.stats-row {
+    display: flex;
+    gap: 12px;
+}
+
+.half-card {
+    flex: 1;
+}

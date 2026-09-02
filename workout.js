@@ -898,6 +898,22 @@ HISTORY.forEach(log => {
 });
 
 
+const today = new Date();
+
+const daysInMonth =
+	new Date(
+		today.getFullYear(),
+		today.getMonth() + 1,
+		0
+	).getDate();
+
+const monthProgress =
+	today.getDate() / daysInMonth;
+
+console.log(
+	'MONTH PROGRESS',
+	Math.round(monthProgress * 100) + '%'
+);
 
 const attentionScores = [];
 
@@ -973,22 +989,6 @@ attentionScores.slice(0,5).forEach(x =>
 	)
 );
 
-const today = new Date();
-
-const daysInMonth =
-	new Date(
-		today.getFullYear(),
-		today.getMonth() + 1,
-		0
-	).getDate();
-
-const monthProgress =
-	today.getDate() / daysInMonth;
-
-console.log(
-	'MONTH PROGRESS',
-	Math.round(monthProgress * 100) + '%'
-);
 
 h+='<div class=section>⭐ Needs Attention</div>';
 

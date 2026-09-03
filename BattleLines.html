@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<title>Battle Lines</title>
+
+	<link rel="stylesheet" href="styles.css?v=1">
+	<link rel="stylesheet" href="cards.css?v=1">
+	<link rel="stylesheet" href="battleLines.css?v=2">
+
+	<script src="api.js"></script>
+	<script src="navigation.js"></script>
+</head>
+
+<body>
+
+	<h1 class="page-title">
+		⚔️ Battle Lines
+	</h1>
+
+	<!-- ======================================== -->
+	<!-- SUMMARY -->
+	<!-- ======================================== -->
+
+	<div class="stats-row">
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					🏆 Areas Leading
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="areasLeading"
+					class="kpi-value">
+
+					0
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					⚔️ Areas Trailing
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="areasTrailing"
+					class="kpi-value">
+
+					0
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- MONTHLY TOTALS -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				📊 Monthly Totals
+			</div>
+		</div>
+
+		<div id="monthlyTotals">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- FULL BATTLE LINES -->
+	<!-- ======================================== -->
+
+	<div class="card battle-lines-card">
+
+		<div class="card-header">
+
+			<div class="card-title">
+				⚔️ Battle Board
+			</div>
+
+		</div>
+
+		<div
+			id="battleLinesList"
+			class="battle-lines-list">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- INSIGHTS -->
+	<!-- ======================================== -->
+
+	<div class="stats-row">
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					🔥 Closest Battle
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="closestArea"
+					class="kpi-value">
+
+					-
+
+				</div>
+
+				<div
+					id="closestDiff"
+					class="kpi-label">
+
+					-
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					🏆 Largest Margin
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="largestArea"
+					class="kpi-value">
+
+					-
+
+				</div>
+
+				<div
+					id="largestDiff"
+					class="kpi-label">
+
+					-
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+<div class="stats-row">
+
+	<div class="card half-card">
+
+		<div class="card-header">
+			<div class="card-title">
+				😬 Most Behind
+			</div>
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="mostBehindArea"
+				class="kpi-value">
+				-
+			</div>
+
+			<div
+				id="mostBehindDiff"
+				class="kpi-label">
+				-
+			</div>
+
+		</div>
+
+	</div>
+
+	<div class="card half-card">
+
+		<div class="card-header">
+			<div class="card-title">
+				⚠️ Most Threatened Lead
+			</div>
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="threatenedArea"
+				class="kpi-value">
+				-
+			</div>
+
+			<div
+				id="threatenedDetail"
+				class="kpi-label">
+				-
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+	<!-- ======================================== -->
+	<!-- BEST OPPORTUNITY -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+
+			<div class="card-title">
+				🎯 Best Opportunity
+			</div>
+
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="opportunityArea"
+				class="kpi-value">
+
+				-
+
+			</div>
+
+			<div
+				id="opportunityDifference"
+				class="kpi-label">
+
+				-
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- AREA LEADERBOARD -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+
+			<div class="card-title">
+				🥇 Area Leaderboard
+			</div>
+
+		</div>
+
+		<div
+			id="leaderboardList"
+			class="card-list">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- FUTURE PLACEHOLDER -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+
+			<div class="card-title">
+				📈 Momentum
+			</div>
+
+		</div>
+
+		<div class="card-row">
+
+			<div class="card-row-label">
+				Coming Soon
+			</div>
+
+		</div>
+
+	</div>
+
+	<div id="navigation"></div>
+
+	<script src="profile.js"></script>
+
+	<script>
+
+	document.addEventListener(
+		'DOMContentLoaded',
+		initializePage
+	);
+
+	async function initializePage(){
+
+		document.getElementById(
+			'navigation'
+		).innerHTML =
+			buildNavigation('');
+
+		try{
+
+			const data =
+				await (
+					await fetch(
+						API +
+						'?action=getBattleLines' +
+						'&user=' +
+						getUserCode() +
+						'&t=' +
+						Date.now()
+					)
+				).json();
+
+			renderBattleBoard(data);
+			renderSummary(data);
+			renderInsights(data);
+			renderLeaderboard(data);
+
+		}
+		catch(err){
+
+			console.error(err);
+
+		}
+
+	}
+
+	function renderSummary(data){
+
+		let areasLeading = 0;
+		let areasTrailing = 0;
+
+		const me =
+			getUserCode();
+
+		data.forEach(x => {
+
+			if(
+				x.LeaderUserCode === me
+			){
+				areasLeading++;
+			}
+			else if(
+				x.LeaderUserCode &&
+				x.LeaderUserCode !== 'TIE'
+			){
+				areasTrailing++;
+			}
+
+		});
+
+		areasLeading.innerText =
+			areasLeading;
+
+		document.getElementById(
+			'areasLeading'
+		).innerText =
+			areasLeading;
+
+		document.getElementById(
+			'areasTrailing'
+		).innerText =
+			areasTrailing;
+
+		const first =
+			data[0] || {};
+
+		document.getElementById(
+			'monthlyTotals'
+		).innerHTML = `
+
+			<div class="card-row">
+
+				<div class="card-row-label">
+					${first.LeftUserCode || ''}
+				</div>
+
+				<div class="card-row-value">
+					${Number(
+						first.MonthlyLeftTotal || 0
+					).toLocaleString()}
+				</div>
+
+			</div>
+
+			<div class="card-row">
+
+				<div class="card-row-label">
+					${first.RightUserCode || ''}
+				</div>
+
+				<div class="card-row-value">
+					${Number(
+						first.MonthlyRightTotal || 0
+					).toLocaleString()}
+				</div>
+
+			</div>
+
+		`;
+
+	}
+
+	function renderBattleBoard(data){
+
+		const box =
+			document.getElementById(
+				'battleLinesList'
+			);
+
+		let html = '';
+
+		data.forEach(x => {
+
+			const leader =
+				x.LeaderUserCode || 'TIE';
+
+			const left =
+				x.LeftUserCode;
+
+			const right =
+				x.RightUserCode;
+
+			const side =
+				leader === left
+					? 'left'
+					: leader === right
+						? 'right'
+						: 'tie';
+
+			const pct =
+				Math.min(
+					100,
+					Number(
+						x.LeadPercent || 0
+					)
+				);
+
+			let leftWidth = 0;
+			let rightWidth = 0;
+
+			if(side === 'left'){
+				leftWidth = pct;
+			}
+
+			if(side === 'right'){
+				rightWidth = pct;
+			}
+
+			const diffClass =
+				side === 'left'
+					? 'battle-line-winner-left'
+					: side === 'right'
+						? 'battle-line-winner-right'
+						: 'battle-line-even';
+
+			html += `
+
+				<div class="battle-line-row">
+
+					<div class="battle-line-top">
+
+						<div class="battle-line-area">
+							${x.WorkoutArea}
+						</div>
+
+						<div class="battle-line-diff ${diffClass}">
+							${Number(
+								x.Difference || 0
+							).toLocaleString()}
+						</div>
+
+					</div>
+
+					<div class="battle-line-track">
+
+						<div class="battle-line-center"></div>
+
+						<div
+							class="battle-line-fill left"
+							style="width:${leftWidth}%">
+						</div>
+
+						<div
+							class="battle-line-fill right"
+							style="width:${rightWidth}%">
+						</div>
+
+					</div>
+
+					<div class="battle-line-footer">
+
+						<span>
+							${left}
+						</span>
+
+						<span>
+							${right}
+						</span>
+
+					</div>
+
+				</div>
+
+			`;
+
+		});
+
+		box.innerHTML = html;
+
+	}
+
+	function renderInsights(data){
+
+		const sorted =
+			[...data]
+				.filter(x =>
+					Number(
+						x.Difference || 0
+					) > 0
+				)
+				.sort(
+					(a,b) =>
+						Number(a.Difference) -
+						Number(b.Difference)
+				);
+
+		const closest =
+			sorted[0];
+
+		const biggest =
+			[...data]
+				.sort(
+					(a,b) =>
+						Number(b.Difference || 0) -
+						Number(a.Difference || 0)
+				)[0];
+
+		if(closest){
+
+			document.getElementById(
+				'closestArea'
+			).innerText =
+				closest.WorkoutArea;
+
+			document.getElementById(
+				'closestDiff'
+			).innerText =
+				Number(
+					closest.Difference
+				).toLocaleString() +
+				' pts';
+
+			document.getElementById(
+				'opportunityArea'
+			).innerText =
+				closest.WorkoutArea;
+
+			document.getElementById(
+				'opportunityDifference'
+			).innerText =
+				'Only ' +
+				Number(
+					closest.Difference
+				).toLocaleString() +
+				' pts';
+
+		}
+
+		if(biggest){
+
+			document.getElementById(
+				'largestArea'
+			).innerText =
+				biggest.WorkoutArea;
+
+			document.getElementById(
+				'largestDiff'
+			).innerText =
+				Number(
+					biggest.Difference
+				).toLocaleString() +
+				' pts';
+
+		}
+
+	}
+
+	function renderLeaderboard(data){
+
+		const counts = {};
+
+		data.forEach(x => {
+
+			const winner =
+				x.LeaderUserCode;
+
+			if(
+				!winner ||
+				winner === 'TIE'
+			){
+				return;
+			}
+
+			if(!counts[winner]){
+				counts[winner] = 0;
+			}
+
+			counts[winner]++;
+
+		});
+
+		const html =
+			Object.keys(counts)
+			.sort(
+				(a,b) =>
+					counts[b] -
+					counts[a]
+			)
+			.map(user => `
+
+				<div class="card-row">
+
+					<div class="card-row-label">
+						${user}
+					</div>
+
+					<div class="card-row-value">
+						${counts[user]} Areas
+					</div>
+
+				</div>
+
+			`)
+			.join('');
+
+		document.getElementById(
+			'leaderboardList'
+		).innerHTML =
+			html ||
+			'<div class="card-row">No Data</div>';
+
+	}
+
+	</script>
+
+</body>
+</html>

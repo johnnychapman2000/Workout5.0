@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<title>Month Comparison</title>
+
+	<link rel="stylesheet" href="styles.css?v=1">
+	<link rel="stylesheet" href="cards.css?v=1">
+	<link rel="stylesheet" href="battleLines.css?v=2">
+
+	<script src="api.js"></script>
+	<script src="navigation.js"></script>
+
+</head>
+
+<body>
+
+	<h1 class="page-title">
+		📈 Previous vs Current Month
+	</h1>
+
+	<!-- ======================================== -->
+	<!-- OVERALL PROGRESS -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				📊 Overall Progress
+			</div>
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="percentComplete"
+				class="kpi-value">
+				0%
+			</div>
+
+			<div
+				id="progressLabel"
+				class="kpi-label">
+				Loading...
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- IMPROVEMENT / DECLINE -->
+	<!-- ======================================== -->
+
+	<div class="stats-row">
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					🚀 Biggest Improvement
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="bestArea"
+					class="kpi-value">
+					-
+				</div>
+
+				<div
+					id="bestAreaPct"
+					class="kpi-label">
+					-
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					📉 Biggest Decline
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="worstArea"
+					class="kpi-value">
+					-
+				</div>
+
+				<div
+					id="worstAreaPct"
+					class="kpi-label">
+					-
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- PROJECTION -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				📅 End Of Month Projection
+			</div>
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="projectionTotal"
+				class="kpi-value">
+				-
+			</div>
+
+			<div
+				id="projectionLabel"
+				class="kpi-label">
+				-
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- COMPARISON BOARD -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+
+			<div class="card-title">
+				⚔️ Area Comparison
+			</div>
+
+		</div>
+
+		<div
+			id="comparisonBoard">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- NEEDED TO MATCH -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				🎯 Needed To Match Last Month
+			</div>
+		</div>
+
+		<div
+			id="neededList"
+			class="card-list">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- AHEAD OF LAST MONTH -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				✅ Ahead Of Last Month
+			</div>
+		</div>
+
+		<div
+			id="aheadList"
+			class="card-list">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- RECOMMENDATION -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				🔥 Recommended Focus
+			</div>
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="focusArea"
+				class="kpi-value">
+				-
+			</div>
+
+			<div
+				id="focusDetail"
+				class="kpi-label">
+				-
+			</div>
+
+		</div>
+
+	</div>
+
+	<div id="navigation"></div>
+
+	<script src="profile.js"></script>
+
+	<script>
+
+	document.addEventListener(
+		'DOMContentLoaded',
+		initializePage
+	);
+
+	async function initializePage(){
+
+		document.getElementById(
+			'navigation'
+		).innerHTML =
+			buildNavigation('');
+
+		try{
+
+			const data =
+				await (
+					await fetch(
+						API +
+						'?action=getPersonalMonthComparison' +
+						'&user=' +
+						getUserCode() +
+						'&t=' +
+						Date.now()
+					)
+				).json();
+
+			renderSummary(data);
+			renderComparisonBoard(data);
+			renderImprovement(data);
+			renderNeeded(data);
+			renderAhead(data);
+			renderProjection(data);
+			renderFocus(data);
+
+		}
+		catch(err){
+
+			console.error(err);
+
+		}
+
+	}
+
+	function renderSummary(data){
+
+		document.getElementById(
+			'percentComplete'
+		).innerText =
+			Number(
+				data.PercentComplete || 0
+			) +
+			'%';
+
+		document.getElementById(
+			'progressLabel'
+		).innerText =
+			Number(
+				data.CurrentPoints || 0
+			).toLocaleString() +
+			' of ' +
+			Number(
+				data.PreviousPoints || 0
+			).toLocaleString() +
+			' pts';
+
+	}
+
+	function renderImprovement(data){
+
+		let best = null;
+		let worst = null;
+
+		(data.Areas || []).forEach(x => {
+
+			const prev =
+				Number(
+					x.PreviousScore || 0
+				);
+
+			const curr =
+				Number(
+					x.CurrentScore || 0
+				);
+
+			if(prev <= 0){
+				return;
+			}
+
+			const pct =
+				(
+					(curr - prev)
+					/
+					prev
+				) * 100;
+
+			x.ChangePct = pct;
+
+			if(
+				!best ||
+				pct > best.ChangePct
+			){
+				best = x;
+			}
+
+			if(
+				!worst ||
+				pct < worst.ChangePct
+			){
+				worst = x;
+			}
+
+		});
+
+		if(best){
+
+			bestArea.innerText =
+				best.WorkoutArea;
+
+			bestAreaPct.innerText =
+				best.ChangePct.toFixed(1) +
+				'%';
+
+		}
+
+		if(worst){
+
+			worstArea.innerText =
+				worst.WorkoutArea;
+
+			worstAreaPct.innerText =
+				worst.ChangePct.toFixed(1) +
+				'%';
+
+		}
+
+	}
+
+	function renderProjection(data){
+
+		const today =
+			new Date();
+
+		const day =
+			today.getDate();
+
+		const daysInMonth =
+			new Date(
+				today.getFullYear(),
+				today.getMonth() + 1,
+				0
+			).getDate();
+
+		const current =
+			Number(
+				data.CurrentPoints || 0
+			);
+
+		const projected =
+			day
+			?
+			Math.round(
+				(current / day)
+				*
+				daysInMonth
+			)
+			: 0;
+
+		projectionTotal.innerText =
+			projected.toLocaleString() +
+			' pts';
+
+		const previous =
+			Number(
+				data.PreviousPoints || 0
+			);
+
+		const pct =
+			previous
+			?
+			Math.round(
+				(projected / previous)
+				*
+				100
+			)
+			: 0;
+
+		projectionLabel.innerText =
+			pct +
+			'% of last month';
+
+	}
+
+	function renderComparisonBoard(data){
+
+		let html = '';
+
+		(data.Areas || [])
+		.sort(
+			(a,b) =>
+				b.Difference -
+				a.Difference
+		)
+		.forEach(x => {
+
+			html += `
+
+				<div class="card-row">
+
+					<div class="card-row-label">
+
+						${x.WorkoutArea}
+
+					</div>
+
+					<div class="card-row-value">
+
+						${Number(
+							x.CurrentScore || 0
+						).toLocaleString()}
+
+						/
+
+						${Number(
+							x.PreviousScore || 0
+						).toLocaleString()}
+
+					</div>
+
+				</div>
+
+			`;
+
+		});
+
+		document.getElementById(
+			'comparisonBoard'
+		).innerHTML =
+			html;
+
+	}
+
+	function renderNeeded(data){
+
+		const rows =
+			(data.Areas || [])
+			.map(x => {
+
+				const needed =
+					Math.max(
+						0,
+						Number(
+							x.PreviousScore || 0
+						) -
+						Number(
+							x.CurrentScore || 0
+						)
+					);
+
+				return {
+					area:x.WorkoutArea,
+					needed:needed
+				};
+
+			})
+			.filter(
+				x => x.needed > 0
+			)
+			.sort(
+				(a,b) =>
+					b.needed -
+					a.needed
+			);
+
+		document.getElementById(
+			'neededList'
+		).innerHTML =
+			rows.map(x => `
+
+				<div class="card-row">
+
+					<div class="card-row-label">
+						${x.area}
+					</div>
+
+					<div class="card-row-value">
+						+${x.needed.toLocaleString()}
+					</div>
+
+				</div>
+
+			`).join('');
+
+	}
+
+	function renderAhead(data){
+
+		const ahead =
+			(data.Areas || [])
+			.filter(
+				x =>
+					Number(
+						x.CurrentScore || 0
+					)
+					>
+					Number(
+						x.PreviousScore || 0
+					)
+			);
+
+		document.getElementById(
+			'aheadList'
+		).innerHTML =
+
+			ahead.length
+
+			?
+
+			ahead.map(x => `
+
+				<div class="card-row">
+
+					<div class="card-row-label">
+
+						${x.WorkoutArea}
+
+					</div>
+
+					<div class="card-row-value">
+
+						✅
+
+					</div>
+
+				</div>
+
+			`).join('')
+
+			:
+
+			'<div class="card-row">None Yet</div>';
+
+	}
+
+	function renderFocus(data){
+
+		const rows =
+			(data.Areas || [])
+			.map(x => {
+
+				const deficit =
+					Number(
+						x.PreviousScore || 0
+					) -
+					Number(
+						x.CurrentScore || 0
+					);
+
+				return {
+					area:x.WorkoutArea,
+					deficit:deficit
+				};
+
+			})
+			.sort(
+				(a,b) =>
+					b.deficit -
+					a.deficit
+			);
+
+		const focus =
+			rows[0];
+
+		if(!focus){
+			return;
+		}
+
+		focusArea.innerText =
+			focus.area;
+
+		focusDetail.innerText =
+			'Behind by ' +
+			focus.deficit.toLocaleString() +
+			' pts';
+
+	}
+
+	</script>
+
+</body>
+</html>

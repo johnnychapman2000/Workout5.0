@@ -426,3 +426,33 @@ select{
 	justify-content:center;
 	cursor:pointer;
 }
+
+/* ====================
+   CLICKABLE CARDS
+==================== */
+
+.clickable-card{
+	cursor:pointer;
+	transition:
+		transform .2s ease,
+		box-shadow .2s ease,
+		border-color .2s ease;
+}
+
+.clickable-card:hover{
+
+	transform:translateY(-2px);
+
+	border-color:rgba(255,87,87,.6);
+
+	box-shadow:
+		0 0 10px rgba(255,87,87,.15),
+		0 0 20px rgba(255,87,87,.08);
+
+}
+
+.clickable-card:active{
+
+	transform:translateY(0);
+
+}

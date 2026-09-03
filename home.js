@@ -51,6 +51,10 @@ const w =
 
 	nextWorkout.innerText = next.PlanName;
 
+/* ========================================
+   WORKOUT HISTORY
+   ======================================== */
+
 const hist =
 	await (
 		await fetch(
@@ -63,44 +67,134 @@ const hist =
 		)
 	).json();
 
-	let vol = 0;
+/* ========================================
+   MONTHLY VOLUME
+   Current Month Only
+   ======================================== */
 
-	hist.forEach(x => {
-		vol += Number(x.Volume || 0);
-	});
+const currentMonth =
+	new Date().getMonth();
 
-	monthVolume.innerText =
-		vol.toLocaleString() + ' lbs';
+const currentYear =
+	new Date().getFullYear();
 
-	monthCount.innerText =
-		hist.length + ' Exercises Logged';
+let vol = 0;
+let monthExercises = 0;
 
-	renderTopMuscleGroups(hist);
+hist.forEach(x => {
 
-	renderRecentActivity(hist);
+	if(!x.WorkoutDate){
+		return;
+	}
 
+	const workoutDate =
+		new Date(x.WorkoutDate);
+
+	if(
+		workoutDate.getMonth() === currentMonth &&
+		workoutDate.getFullYear() === currentYear
+	){
+
+		vol +=
+			Number(
+				x.Volume || 0
+			);
+
+		monthExercises++;
+
+	}
+
+});
+
+monthVolume.innerText =
+	vol.toLocaleString() + ' pts';
+
+monthCount.innerText =
+	monthExercises +
+	' Exercises Logged';
+
+/* ========================================
+   DASHBOARD CARDS
+   ======================================== */
+
+renderTopMuscleGroups(hist);
+renderRecentActivity(hist);
 //renderBattleLines();
-renderBattleLines2();
+//renderBattleLines2();
+renderBattleLinesSummary();
 renderLeadChase();
 renderPreviousMonthResults();
 renderMonthComparison();
 
+/* ========================================
+   CURRENT STREAK
+   ======================================== */
 
-	const dates = [
+const workoutDays =
+	[
+
 		...new Set(
 			hist
 				.map(x =>
-					String(x.WorkoutDate).substring(0,10)
+					String(x.WorkoutDate)
+						.substring(0,10)
 				)
 				.filter(Boolean)
 		)
-	];
+	].sort();
 
-	streak.innerText =
-		'🔥 ' +
-		dates.length +
-		' Day' +
-		(dates.length === 1 ? '' : 's');
+let streakCount = 0;
+
+const latestWorkoutDay =
+	workoutDays.length
+		? workoutDays[
+			workoutDays.length - 1
+		  ]
+		: null;
+
+const parts =
+	latestWorkoutDay.split('-');
+
+const checkDate =
+	new Date(
+		Number(parts[0]),
+		Number(parts[1]) - 1,
+		Number(parts[2])
+	);
+
+while(true){
+
+	const dayText =
+		checkDate.getFullYear() +
+		'-' +
+		String(
+			checkDate.getMonth() + 1
+		).padStart(2,'0') +
+		'-' +
+		String(
+			checkDate.getDate()
+		).padStart(2,'0');
+
+	if(
+		workoutDays.includes(dayText)
+	){
+		streakCount++;
+
+		checkDate.setDate(
+			checkDate.getDate() - 1
+		);
+	}
+	else{
+		break;
+	}
+
+}
+
+streak.innerText =
+	'🔥 ' +
+	streakCount +
+	' Day' +
+	(streakCount === 1 ? '' : 's');
 }
 
 
@@ -257,6 +351,295 @@ function formatRecentDate(dateValue){
 	return dateValue;
 }
 
+/* ========================================
+   BATTLE LINES SUMMARY
+   ======================================== */
+async function renderBattleLinesSummary(){
+
+	const box =
+		document.getElementById(
+			'battleLinesList2'
+		);
+
+	if(!box){
+		return;
+	}
+
+	try{
+
+		const data =
+			await (
+				await fetch(
+					API +
+					'?action=getBattleLines' +
+					'&user=' +
+					getUserCode() +
+					'&t=' +
+					Date.now()
+				)
+			).json();
+
+		if(!data.length){
+
+			box.innerHTML =
+				'<div class="card-row-value">No battle data yet</div>';
+
+			return;
+		}
+
+		const battles =
+			data.filter(
+				x =>
+					x.WorkoutArea &&
+					x.WorkoutArea !== 'TOTAL VOLUME'
+			);
+
+		const me =
+			getUserCode();
+
+		/* ========================================
+		   BIGGEST LEAD / DEFICIT
+		   ======================================== */
+
+		const largestMargin =
+			[...battles]
+			.sort(
+				(a,b) =>
+					Number(b.Difference || 0) -
+					Number(a.Difference || 0)
+			)[0];
+
+		/* ========================================
+		   TAKEOVER OPPORTUNITY
+		   ======================================== */
+
+		const opportunities =
+			battles.filter(
+				x =>
+					x.LeaderUserCode &&
+					x.LeaderUserCode !== me
+			);
+
+		const takeoverOpportunity =
+			opportunities
+			.sort(
+				(a,b) =>
+					Number(a.Difference || 0) -
+					Number(b.Difference || 0)
+			)[0];
+
+		/* ========================================
+		   MONTHLY LEADER
+		   ======================================== */
+
+		const standingsMap = {};
+
+		data.forEach(x => {
+
+			if(x.LeftUserCode){
+
+				standingsMap[x.LeftUserCode] =
+					Math.max(
+						standingsMap[x.LeftUserCode] || 0,
+						Number(
+							x.MonthlyLeftTotal || 0
+						)
+					);
+
+			}
+
+			if(x.RightUserCode){
+
+				standingsMap[x.RightUserCode] =
+					Math.max(
+						standingsMap[x.RightUserCode] || 0,
+						Number(
+							x.MonthlyRightTotal || 0
+						)
+					);
+
+			}
+
+		});
+
+		const standings =
+			Object.keys(standingsMap)
+			.map(user => ({
+				user,
+				total: standingsMap[user]
+			}))
+			.sort(
+				(a,b) =>
+					b.total - a.total
+			);
+
+		const myIndex =
+			standings.findIndex(
+				x => x.user === me
+			);
+
+		let volumeLeader = null;
+		let volumeGap = 0;
+
+		if(myIndex >= 0){
+
+			if(myIndex === 0){
+
+				volumeLeader =
+					standings[1] ||
+					standings[0];
+
+			}
+			else{
+
+				volumeLeader =
+					standings[myIndex - 1];
+
+			}
+
+			if(volumeLeader){
+
+				volumeGap =
+					Math.abs(
+						standings[myIndex].total -
+						volumeLeader.total
+					);
+
+			}
+
+		}
+
+		let html = '';
+
+		if(takeoverOpportunity){
+
+			html += `
+				<div class="card-row">
+					<div class="card-row-label">
+						🎯 Takeover Opportunity
+					</div>
+					<div class="card-row-value">
+						${takeoverOpportunity.WorkoutArea}
+						(${Number(
+							takeoverOpportunity.Difference || 0
+						).toLocaleString()})
+					</div>
+				</div>
+			`;
+
+		}
+
+		if(largestMargin){
+
+			const largestLabel =
+				largestMargin.LeaderUserCode === me
+					? '🏆 Biggest Lead'
+					: '⚠️ Biggest Deficit';
+
+			html += `
+				<div class="card-row">
+					<div class="card-row-label">
+						${largestLabel}
+					</div>
+					<div class="card-row-value">
+						${largestMargin.WorkoutArea}
+						(${Number(
+							largestMargin.Difference || 0
+						).toLocaleString()})
+					</div>
+				</div>
+			`;
+
+		}
+
+		if(volumeLeader){
+
+			const myTotal =
+				standings[myIndex].total;
+
+			const leaderTotal =
+				volumeLeader.total;
+
+			const combinedTotal =
+				myTotal + leaderTotal;
+
+			const myPct =
+				combinedTotal
+					? Math.round(
+						(myTotal / combinedTotal) * 100
+					)
+					: 50;
+
+			const leaderPct =
+				100 - myPct;
+
+			html += `
+				<div class="card-row">
+					<div class="card-row-label">
+						👑 Monthly Leader
+					</div>
+					<div class="card-row-value">
+						${volumeLeader.user}
+						(${volumeGap.toLocaleString()})
+					</div>
+				</div>
+
+				<div class="battle-lines-mini">
+
+					<div class="battle-line-track">
+
+						<div class="battle-line-center"></div>
+
+						<div
+							class="battle-line-fill left"
+							style="width:${myPct}%">
+						</div>
+
+						<div
+							class="battle-line-fill right"
+							style="width:${leaderPct}%">
+						</div>
+
+					</div>
+
+					<div class="battle-line-footer">
+
+						<span>
+							${me} ${myTotal.toLocaleString()}
+						</span>
+
+						<span>
+							${volumeLeader.user} ${leaderTotal.toLocaleString()}
+						</span>
+
+					</div>
+
+				</div>
+			`;
+
+		}
+
+		html += `
+			<div class="battle-lines-link">
+				⚔️ View Full Battle Lines →
+			</div>
+		`;
+
+		box.innerHTML = html;
+
+	}
+	catch(err){
+
+		console.error(
+			'Battle Lines Summary failed:',
+			err
+		);
+
+		box.innerHTML =
+			'<div class="card-row-value">Battle Lines unavailable</div>';
+
+	}
+}
 
 /* ========================================
    BATTLE LINES 2
@@ -421,130 +804,201 @@ async function renderBattleLines2(){
 
 		});
 
-		/* ========================================
-		   TOTAL VOLUME
-		   ======================================== */
+/* ========================================
+   TOTAL VOLUME
+   Compare Against Nearest Competitor
+   ======================================== */
 
-		const totalLeftUser =
-			data[0].LeftUserCode ||
-			getUserCode();
+const standingsMap = {};
 
-		const totalRightUser =
-			data[0].RightUserCode ||
-			'TARGET';
+data.forEach(x => {
 
-		const leftTotal =
-			Number(
-				data[0].MonthlyLeftTotal || 0
-			);
+	if(x.LeftUserCode){
 
-		const rightTotal =
-			Number(
-				data[0].MonthlyRightTotal || 0
-			);
-
-		const monthlyLeftTotal =
-			leftTotal.toLocaleString();
-
-		const monthlyRightTotal =
-			rightTotal.toLocaleString();
-
-		const diff =
-			Math.abs(
-				leftTotal - rightTotal
-			);
-
-		const total =
-			leftTotal + rightTotal;
-
-		const leadPct =
-			total
-				? Math.min(
-					100,
-					Math.round(
-						(diff / total) * 100
-					)
+		standingsMap[x.LeftUserCode] =
+			Math.max(
+				standingsMap[x.LeftUserCode] || 0,
+				Number(
+					x.MonthlyLeftTotal || 0
 				)
-				: 0;
-
-		let leftPct = 0;
-		let rightPct = 0;
-
-		if(leftTotal > rightTotal){
-			leftPct = leadPct;
-		}
-
-		if(rightTotal > leftTotal){
-			rightPct = leadPct;
-		}
-
-		const totalDiffClass =
-			leftTotal > rightTotal
-				? 'battle-line-winner-left'
-				: rightTotal > leftTotal
-					? 'battle-line-winner-right'
-					: 'battle-line-even';
-
-		html += `
-			<div class="battle-line-row">
-
-				<div class="battle-line-top">
-
-					<div class="battle-line-area">
-						TOTAL VOLUME
-					</div>
-
-					<div class="battle-line-diff ${totalDiffClass}">
-						${diff.toLocaleString()} pts
-					</div>
-
-				</div>
-
-				<div class="battle-line-track">
-
-					<div class="battle-line-center"></div>
-
-					<div
-						class="battle-line-fill left"
-						style="width:${leftPct}%">
-					</div>
-
-					<div
-						class="battle-line-fill right"
-						style="width:${rightPct}%">
-					</div>
-
-				</div>
-
-				<div class="battle-line-footer">
-
-					<span>
-						${totalLeftUser} ${monthlyLeftTotal}
-					</span>
-
-					<span>
-						${totalRightUser} ${monthlyRightTotal}
-					</span>
-
-				</div>
-
-			</div>
-		`;
-
-		box.innerHTML = html;
+			);
 
 	}
-	catch(err){
 
-		console.error(
-			'Battle Lines 2 failed:',
-			err
-		);
+	if(x.RightUserCode){
 
-		box.innerHTML =
-			'<div class="card-row-value">Battle Lines unavailable</div>';
+		standingsMap[x.RightUserCode] =
+			Math.max(
+				standingsMap[x.RightUserCode] || 0,
+				Number(
+					x.MonthlyRightTotal || 0
+				)
+			);
+
 	}
+
+});
+
+const standings =
+	Object.keys(standingsMap)
+	.map(user => ({
+
+		user,
+		total:standingsMap[user]
+
+	}))
+	.sort(
+		(a,b) =>
+			b.total - a.total
+	);
+
+const me =
+	getUserCode();
+
+const myIndex =
+	standings.findIndex(
+		x => x.user === me
+	);
+
+if(myIndex < 0){
+	return;
 }
+
+let opponent = null;
+
+if(myIndex === 0){
+
+	opponent =
+		standings[1] ||
+		standings[0];
+
+}
+else{
+
+	opponent =
+		standings[myIndex - 1];
+
+}
+
+const myStanding =
+	standings[myIndex];
+
+const totalLeftUser =
+	myStanding.user;
+
+const totalRightUser =
+	opponent.user;
+
+const leftTotal =
+	myStanding.total;
+
+const rightTotal =
+	opponent.total;
+
+const monthlyLeftTotal =
+	leftTotal.toLocaleString();
+
+const monthlyRightTotal =
+	rightTotal.toLocaleString();
+
+const diff =
+	Math.abs(
+		leftTotal - rightTotal
+	);
+
+const total =
+	leftTotal + rightTotal;
+
+const leadPct =
+	total
+		? Math.min(
+			100,
+			Math.round(
+				(diff / total) * 100
+			)
+		)
+		: 0;
+
+let leftPct = 0;
+let rightPct = 0;
+
+if(leftTotal > rightTotal){
+	leftPct = leadPct;
+}
+
+if(rightTotal > leftTotal){
+	rightPct = leadPct;
+}
+
+const totalDiffClass =
+	leftTotal > rightTotal
+		? 'battle-line-winner-left'
+		: rightTotal > leftTotal
+			? 'battle-line-winner-right'
+			: 'battle-line-even';
+
+html += `
+	<div class="battle-line-row">
+
+		<div class="battle-line-top">
+
+			<div class="battle-line-area">
+				TOTAL VOLUME
+			</div>
+
+			<div class="battle-line-diff ${totalDiffClass}">
+				${diff.toLocaleString()} pts
+			</div>
+
+		</div>
+
+		<div class="battle-line-track">
+
+			<div class="battle-line-center"></div>
+
+			<div
+				class="battle-line-fill left"
+				style="width:${leftPct}%">
+			</div>
+
+			<div
+				class="battle-line-fill right"
+				style="width:${rightPct}%">
+			</div>
+
+		</div>
+
+		<div class="battle-line-footer">
+
+			<span>
+				${totalLeftUser} ${monthlyLeftTotal}
+			</span>
+
+			<span>
+				${totalRightUser} ${monthlyRightTotal}
+			</span>
+
+		</div>
+
+	</div>
+`;
+
+box.innerHTML = html;
+
+}
+catch(err){
+
+	console.error(
+		'Battle Lines 2 failed:',
+		err
+	);
+
+	box.innerHTML =
+		'<div class="card-row-value">Battle Lines unavailable</div>';
+
+}
+}
+
 /* ========================================
    LEAD CHASE
    ======================================== */
@@ -1024,7 +1478,7 @@ async function renderPreviousMonthResults(){
 						color:#4ea1ff;
 					">
 
-					${score} lbs
+					${score} points
 
 				</div>
 

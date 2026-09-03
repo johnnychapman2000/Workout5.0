@@ -158,3 +158,33 @@
 	font-weight:700;
 	color:var(--muted);
 }
+
+/* ========================================
+   HOME DASHBOARD MINI BATTLE BAR
+   ======================================== */
+
+.battle-lines-mini{
+	margin-top:10px;
+	margin-bottom:10px;
+}
+
+.battle-lines-mini .battle-line-track{
+	height:10px;
+}
+
+.battle-lines-mini .battle-line-footer{
+	display:flex;
+	justify-content:space-between;
+	font-size:11px;
+	margin-top:6px;
+	color:#9fb3c8;
+}
+
+.battle-lines-mini .battle-line-footer{
+	display:flex;
+	justify-content:space-between;
+	font-size:10px;
+	margin-top:4px;
+	color:#9fb3c8;
+	font-weight:600;
+}

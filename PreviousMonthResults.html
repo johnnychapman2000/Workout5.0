@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<title>Previous Month Results</title>
+
+	<link rel="stylesheet" href="styles.css?v=1">
+	<link rel="stylesheet" href="cards.css?v=1">
+
+	<script src="api.js"></script>
+	<script src="navigation.js"></script>
+</head>
+
+<body>
+
+	<h1 class="page-title">
+		🏆 Previous Month Results
+	</h1>
+
+	<!-- ======================================== -->
+	<!-- CHAMPION CARD -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				🏆 Previous Month Champion
+			</div>
+		</div>
+
+		<div class="kpi">
+
+			<div
+				id="championName"
+				class="kpi-value">
+				Loading...
+			</div>
+
+			<div
+				id="championScore"
+				class="kpi-label">
+				-
+			</div>
+
+			<div
+				id="championAreaWins"
+				class="kpi-label">
+				-
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- MONTH HIGHLIGHTS -->
+	<!-- ======================================== -->
+
+	<div class="stats-row">
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					⚔️ Closest Battle
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="closestBattleArea"
+					class="kpi-value">
+					-
+				</div>
+
+				<div
+					id="closestBattleDiff"
+					class="kpi-label">
+					-
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="card half-card">
+
+			<div class="card-header">
+				<div class="card-title">
+					🔥 Biggest Win
+				</div>
+			</div>
+
+			<div class="kpi">
+
+				<div
+					id="largestWinArea"
+					class="kpi-value">
+					-
+				</div>
+
+				<div
+					id="largestWinDiff"
+					class="kpi-label">
+					-
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- FINAL STANDINGS -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				🥇 Final Standings
+			</div>
+		</div>
+
+		<div
+			id="standingsList"
+			class="card-list">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- AREA RESULTS -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				⚔️ Area Results
+			</div>
+		</div>
+
+		<div
+			id="areaResultsList"
+			class="card-list">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- MONTH STATS -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				📊 Competition Stats
+			</div>
+		</div>
+
+		<div
+			id="competitionStats"
+			class="card-list">
+
+			Loading...
+
+		</div>
+
+	</div>
+
+	<!-- ======================================== -->
+	<!-- MONTH SUMMARY -->
+	<!-- ======================================== -->
+
+	<div class="card">
+
+		<div class="card-header">
+			<div class="card-title">
+				📜 Summary
+			</div>
+		</div>
+
+		<div
+			id="summaryBox"
+			class="card-list">
+
+		</div>
+
+	</div>
+
+	<div id="navigation"></div>
+
+<script src="profile.js"></script>
+
+<script>
+
+document.addEventListener(
+	'DOMContentLoaded',
+	initializePage
+);
+
+async function initializePage(){
+
+	document.querySelector(
+		'.page-title'
+	).innerText =
+		'🏆 Previous Month Results';
+
+	document.getElementById(
+		'navigation'
+	).innerHTML =
+		buildNavigation('');
+
+	try{
+
+		const data =
+			await (
+				await fetch(
+					API +
+					'?action=getPreviousMonthResultsDetail' +
+					'&user=' +
+					getUserCode() +
+					'&t=' +
+					Date.now()
+				)
+			).json();
+
+		renderChampion(data);
+		renderStandings(data);
+		renderAreas(data);
+		renderStats(data);
+		renderHighlights(data);
+
+	}
+	catch(err){
+
+		console.error(err);
+
+		document.getElementById(
+			'summaryBox'
+		).innerHTML =
+			'Unable to load results';
+
+	}
+
+}
+
+function renderChampion(data){
+
+	document.getElementById(
+		'championName'
+	).innerText =
+		data.Champion || 'N/A';
+
+	document.getElementById(
+		'championScore'
+	).innerText =
+		Number(
+			data.ChampionScore || 0
+		).toLocaleString() +
+		' pts';
+
+	document.getElementById(
+		'championAreaWins'
+	).innerText =
+		'Won ' +
+		Number(
+			data.AreasWon || 0
+		) +
+		' Areas';
+
+}
+
+function renderStandings(data){
+
+	const box =
+		document.getElementById(
+			'standingsList'
+		);
+
+	let html = '';
+
+	(data.Standings || [])
+	.forEach(
+		(x,index) => {
+
+			let medal = '🏅';
+
+			if(index === 0){
+				medal = '🥇';
+			}
+			else if(index === 1){
+				medal = '🥈';
+			}
+			else if(index === 2){
+				medal = '🥉';
+			}
+
+			html += `
+				<div class="card-row">
+
+					<div class="card-row-label">
+						${medal} ${x.UserCode}
+					</div>
+
+					<div class="card-row-value">
+						${Number(
+							x.Score || 0
+						).toLocaleString()}
+					</div>
+
+				</div>
+			`;
+
+		});
+
+	box.innerHTML = html;
+
+}
+
+function renderAreas(data){
+
+	const box =
+		document.getElementById(
+			'areaResultsList'
+		);
+
+	let html = '';
+
+	(data.AreaResults || [])
+	.forEach(x => {
+
+		html += `
+			<div class="card-row">
+
+				<div class="card-row-label">
+
+					${x.WorkoutArea}
+
+					<br>
+
+					<small>
+						Winner:
+						${x.WinnerUserCode}
+					</small>
+
+				</div>
+
+				<div class="card-row-value">
+
+					${Number(
+						x.Difference || 0
+					).toLocaleString()}
+					pts
+
+				</div>
+
+			</div>
+		`;
+
+	});
+
+	box.innerHTML = html;
+
+}
+
+function renderStats(data){
+
+	const box =
+		document.getElementById(
+			'competitionStats'
+		);
+
+	box.innerHTML = `
+
+		<div class="card-row">
+
+			<div class="card-row-label">
+				Total Areas
+			</div>
+
+			<div class="card-row-value">
+				${data.TotalAreas || 0}
+			</div>
+
+		</div>
+
+		<div class="card-row">
+
+			<div class="card-row-label">
+				Champion Points
+			</div>
+
+			<div class="card-row-value">
+				${Number(
+					data.ChampionScore || 0
+				).toLocaleString()}
+			</div>
+
+		</div>
+
+		<div class="card-row">
+
+			<div class="card-row-label">
+				Victory Margin
+			</div>
+
+			<div class="card-row-value">
+				${Number(
+					data.VictoryMargin || 0
+				).toLocaleString()}
+			</div>
+
+		</div>
+
+	`;
+
+}
+
+function renderHighlights(data){
+
+	document.getElementById(
+		'closestBattleArea'
+	).innerText =
+		data.ClosestBattleArea || '-';
+
+	document.getElementById(
+		'closestBattleDiff'
+	).innerText =
+		Number(
+			data.ClosestBattleDifference || 0
+		).toLocaleString() +
+		' pts';
+
+	document.getElementById(
+		'largestWinArea'
+	).innerText =
+		data.BiggestWinArea || '-';
+
+	document.getElementById(
+		'largestWinDiff'
+	).innerText =
+		Number(
+			data.BiggestWinDifference || 0
+		).toLocaleString() +
+		' pts';
+
+	document.getElementById(
+		'summaryBox'
+	).innerHTML = `
+
+		<div class="card-row">
+
+			<div class="card-row-label">
+				Last Month Champion
+			</div>
+
+			<div class="card-row-value">
+				${data.Champion || 'N/A'}
+			</div>
+
+		</div>
+
+		<div class="card-row">
+
+			<div class="card-row-label">
+				Areas Won
+			</div>
+
+			<div class="card-row-value">
+				${data.AreasWon || 0}
+			</div>
+
+		</div>
+
+		<div class="card-row">
+
+			<div class="card-row-label">
+				Largest Dominance
+			</div>
+
+			<div class="card-row-value">
+				${data.BiggestWinArea || '-'}
+			</div>
+
+		</div>
+
+	`;
+
+}
+
+</script>
+
+</body>
+</html>

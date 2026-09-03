@@ -4,10 +4,10 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Home</title>
-	<link rel="stylesheet" href="styles.css?v=1">
-	<link rel="stylesheet" href="cards.css?v=1">
+	<link rel="stylesheet" href="styles.css?v=2">
+	<link rel="stylesheet" href="cards.css?v=2">
 	<link rel="stylesheet" href="ticker-slide.css?v=3">
-	<link rel="stylesheet" href="battleLines.css?v=2">
+	<link rel="stylesheet" href="battleLines.css?v=3">
 	<script src="api.js"></script>
 	<script src="navigation.js"></script>
 
@@ -19,6 +19,32 @@
 		<div id="exerciseCount" class="exercise-count">Loading...</div>
 		<button class="btn-primary" onclick="location.href=buildProfileUrl('workout.html')">START WORKOUT</button>
 	</div>
+
+<!-- ======================================== -->
+<!-- PREVIOUS MONTH RESULTS -->
+<!-- ======================================== -->
+
+<div class="card previous-month-card clickable-card" onclick="location.href=buildProfileUrl('PreviousMonthResults.html')">
+
+    <div class="card-header">
+        <div class="card-title">
+            🏆 Previous Month Winner
+        </div>
+    </div>
+
+    <div id="previousMonthResults">
+
+        <div class="kpi-value">
+            Loading...
+        </div>
+
+        <div class="kpi-label">
+            Previous Month Champion
+        </div>
+
+    </div>
+
+</div>
 
 <div class="card ticker-card ticker-slide-card">
 
@@ -47,7 +73,7 @@
 </div>
 
 
-<div class="card battle-lines-card">
+<div class="card battle-lines-card clickable-card" onclick="location.href=buildProfileUrl('BattleLines.html')">
 
 	<div class="card-header">
 		<div class="card-title">
@@ -141,36 +167,10 @@
 </div>
 
 <!-- ======================================== -->
-<!-- PREVIOUS MONTH RESULTS -->
-<!-- ======================================== -->
-
-<div class="card previous-month-card">
-
-    <div class="card-header">
-        <div class="card-title">
-            🏆 Previous Month Results
-        </div>
-    </div>
-
-    <div id="previousMonthResults">
-
-        <div class="kpi-value">
-            Loading...
-        </div>
-
-        <div class="kpi-label">
-            Previous Month Champion
-        </div>
-
-    </div>
-
-</div>
-
-<!-- ======================================== -->
 <!-- PERSONAL MONTH COMPARISON -->
 <!-- ======================================== -->
 
-<div class="card personal-month-card">
+<div class="card personal-month-card clickable-card" onclick="location.href=buildProfileUrl('MonthComparison.html')">
 
     <div class="card-header">
         <div class="card-title">
@@ -277,7 +277,7 @@
 
 <div id="navigation"></div>
 <script src="profile.js"></script>
-<script src="home.js?v=4"></script>
+<script src="home.js?v=6"></script>
 <script src="cache.js"></script>
 <script src="quickEntry.js?v=1"></script>
 <script src="familyTicker.js?v=15"></script>

@@ -1,0 +1,55 @@
+/* ========================================
+   LEAD CHASE
+   ======================================== */
+
+.lead-chase-divider{
+
+	text-align:center;
+
+	margin:20px 0;
+
+	color:#4ea1ff;
+
+	font-size:18px;
+
+}
+
+.pill-list{
+
+	display:flex;
+
+	flex-wrap:wrap;
+
+	gap:8px;
+
+	margin-top:12px;
+
+}
+
+.pill{
+
+	padding:6px 12px;
+
+	border-radius:20px;
+
+	background:#18263f;
+
+	color:#4ea1ff;
+
+	font-size:12px;
+
+	font-weight:600;
+
+}
+
+.lead-chase-gap{
+
+	margin-top:12px;
+
+	font-size:18px;
+
+	font-weight:700;
+
+	color:#ffb347;
+
+}

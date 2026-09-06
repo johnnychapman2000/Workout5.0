@@ -641,363 +641,6 @@ async function renderBattleLinesSummary(){
 	}
 }
 
-/* ========================================
-   BATTLE LINES 2
-   ======================================== */
-async function renderBattleLines2(){
-
-	const box =
-		document.getElementById(
-			'battleLinesList2'
-		);
-
-	if(!box){
-		return;
-	}
-
-	try{
-
-		const data =
-			await (
-				await fetch(
-					API +
-					'?action=getBattleLines' +
-					'&user=' +
-					getUserCode() +
-					'&t=' +
-					Date.now()
-				)
-			).json();
-
-		if(!data.length){
-
-			box.innerHTML =
-				'<div class="card-row-value">No battle data yet</div>';
-
-			return;
-		}
-
-		let html = '';
-
-		data.forEach(x => {
-
-			/* ========================================
-			   BATTLE ROW DATA
-			   ======================================== */
-
-			const leader =
-				x.LeaderUserCode || 'TIE';
-
-			const leftUser =
-				x.LeftUserCode ||
-				getUserCode();
-
-			const rightUser =
-				x.RightUserCode ||
-				'TARGET';
-
-			const side =
-				leader === rightUser
-					? 'right'
-					: leader === leftUser
-						? 'left'
-						: 'tie';
-
-			const pct =
-				Math.min(
-					100,
-					Number(
-						x.LeadPercent || 0
-					)
-				);
-
-			let leftWidth = 0;
-			let rightWidth = 0;
-
-			if(side === 'left'){
-				leftWidth = pct;
-			}
-
-			if(side === 'right'){
-				rightWidth = pct;
-			}
-
-			const diffClass =
-				side === 'left'
-					? 'battle-line-winner-left'
-					: side === 'right'
-						? 'battle-line-winner-right'
-						: 'battle-line-even';
-
-			const diffText =
-				side === 'tie'
-					? 'Even'
-					: Number(
-						x.Difference || 0
-					).toLocaleString() +
-						' ' +
-						(x.UnitLabel || 'pts');
-
-			const leftVolume =
-				Number(
-					x.LeftScore ||
-					x.LeftVolume ||
-					0
-				).toLocaleString();
-
-			const rightVolume =
-				Number(
-					x.RightScore ||
-					x.RightVolume ||
-					0
-				).toLocaleString();
-
-			/* ========================================
-			   BATTLE ROW
-			   ======================================== */
-
-			html += `
-				<div class="battle-line-row">
-
-					<div class="battle-line-top">
-
-						<div class="battle-line-area">
-							${x.WorkoutArea}
-						</div>
-
-						<div class="battle-line-diff ${diffClass}">
-							${diffText}
-						</div>
-
-					</div>
-
-					<div class="battle-line-track">
-
-						<div class="battle-line-center"></div>
-
-						<div
-							class="battle-line-fill left"
-							style="width:${leftWidth}%">
-						</div>
-
-						<div
-							class="battle-line-fill right"
-							style="width:${rightWidth}%">
-						</div>
-
-					</div>
-
-					<div class="battle-line-footer">
-
-						<span>
-							${leftUser} ${leftVolume}
-						</span>
-
-						<span>
-							${rightUser} ${rightVolume}
-						</span>
-
-					</div>
-
-				</div>
-			`;
-
-		});
-
-/* ========================================
-   TOTAL VOLUME
-   Compare Against Nearest Competitor
-   ======================================== */
-
-const standingsMap = {};
-
-data.forEach(x => {
-
-	if(x.LeftUserCode){
-
-		standingsMap[x.LeftUserCode] =
-			Math.max(
-				standingsMap[x.LeftUserCode] || 0,
-				Number(
-					x.MonthlyLeftTotal || 0
-				)
-			);
-
-	}
-
-	if(x.RightUserCode){
-
-		standingsMap[x.RightUserCode] =
-			Math.max(
-				standingsMap[x.RightUserCode] || 0,
-				Number(
-					x.MonthlyRightTotal || 0
-				)
-			);
-
-	}
-
-});
-
-const standings =
-	Object.keys(standingsMap)
-	.map(user => ({
-
-		user,
-		total:standingsMap[user]
-
-	}))
-	.sort(
-		(a,b) =>
-			b.total - a.total
-	);
-
-const me =
-	getUserCode();
-
-const myIndex =
-	standings.findIndex(
-		x => x.user === me
-	);
-
-if(myIndex < 0){
-	return;
-}
-
-let opponent = null;
-
-if(myIndex === 0){
-
-	opponent =
-		standings[1] ||
-		standings[0];
-
-}
-else{
-
-	opponent =
-		standings[myIndex - 1];
-
-}
-
-const myStanding =
-	standings[myIndex];
-
-const totalLeftUser =
-	myStanding.user;
-
-const totalRightUser =
-	opponent.user;
-
-const leftTotal =
-	myStanding.total;
-
-const rightTotal =
-	opponent.total;
-
-const monthlyLeftTotal =
-	leftTotal.toLocaleString();
-
-const monthlyRightTotal =
-	rightTotal.toLocaleString();
-
-const diff =
-	Math.abs(
-		leftTotal - rightTotal
-	);
-
-const total =
-	leftTotal + rightTotal;
-
-const leadPct =
-	total
-		? Math.min(
-			100,
-			Math.round(
-				(diff / total) * 100
-			)
-		)
-		: 0;
-
-let leftPct = 0;
-let rightPct = 0;
-
-if(leftTotal > rightTotal){
-	leftPct = leadPct;
-}
-
-if(rightTotal > leftTotal){
-	rightPct = leadPct;
-}
-
-const totalDiffClass =
-	leftTotal > rightTotal
-		? 'battle-line-winner-left'
-		: rightTotal > leftTotal
-			? 'battle-line-winner-right'
-			: 'battle-line-even';
-
-html += `
-	<div class="battle-line-row">
-
-		<div class="battle-line-top">
-
-			<div class="battle-line-area">
-				TOTAL VOLUME
-			</div>
-
-			<div class="battle-line-diff ${totalDiffClass}">
-				${diff.toLocaleString()} pts
-			</div>
-
-		</div>
-
-		<div class="battle-line-track">
-
-			<div class="battle-line-center"></div>
-
-			<div
-				class="battle-line-fill left"
-				style="width:${leftPct}%">
-			</div>
-
-			<div
-				class="battle-line-fill right"
-				style="width:${rightPct}%">
-			</div>
-
-		</div>
-
-		<div class="battle-line-footer">
-
-			<span>
-				${totalLeftUser} ${monthlyLeftTotal}
-			</span>
-
-			<span>
-				${totalRightUser} ${monthlyRightTotal}
-			</span>
-
-		</div>
-
-	</div>
-`;
-
-box.innerHTML = html;
-
-}
-catch(err){
-
-	console.error(
-		'Battle Lines 2 failed:',
-		err
-	);
-
-	box.innerHTML =
-		'<div class="card-row-value">Battle Lines unavailable</div>';
-
-}
-}
 
 /* ========================================
    LEAD CHASE
@@ -1132,15 +775,12 @@ async function renderMonthComparison(){
 				)
 			).json();
 
-		const today =
-			new Date();
+		const today = new Date();
 
 		const currentMonthLabel =
 			today.toLocaleString(
 				'en-US',
-				{
-					month:'long'
-				}
+				{ month:'long' }
 			);
 
 		const previousDate =
@@ -1153,75 +793,61 @@ async function renderMonthComparison(){
 		const previousMonthLabel =
 			previousDate.toLocaleString(
 				'en-US',
-				{
-					month:'long'
-				}
+				{ month:'long' }
 			);
 
-		const previousMonth =
-			data.PreviousMonth || '';
-
-		const currentMonth =
-			data.CurrentMonth || '';
+		const previousMonth = data.PreviousMonth || '';
+		const currentMonth = data.CurrentMonth || '';
 
 		let html = `
-
 			<div class="battle-line-header">
-
 				<span>${previousMonthLabel}</span>
-
 				<span>${currentMonthLabel}</span>
-
 			</div>
-
 		`;
 
 		(data.Areas || [])
-			.sort(
-				(a,b) =>
-					b.Difference - a.Difference
-			)
+			.sort((a,b) => b.Difference - a.Difference)
 			.forEach(x => {
 
-				/* ========================================
-				   COMPARISON AREA
-				   ======================================== */
+				const previousScore = Number(x.PreviousScore || 0);
+				const currentScore = Number(x.CurrentScore || 0);
+				const leaderMonth = x.LeaderMonth || 'TIE';
 
-				const previousScore =
-					Number(
-						x.PreviousScore || 0
-					);
+				let behindPct = 0;
+				let aheadPct = 0;
 
-				const currentScore =
-					Number(
-						x.CurrentScore || 0
-					);
+if(previousScore > currentScore){
 
-				const leaderMonth =
-					x.LeaderMonth || 'TIE';
+	behindPct = Math.min(
+		100,
+		Math.round(
+			((previousScore - currentScore) / previousScore) * 50
+		)
+	);
 
-				const pct =
-					Math.min(
-						100,
-						Number(
-							x.LeadPercent || 0
-						)
-					);
+}
+else{
 
-				let leftWidth = 0;
-				let rightWidth = 0;
+	behindPct = 0;
 
-				if(
-					leaderMonth === previousMonth
-				){
-					leftWidth = pct;
-				}
+} 
+if(currentScore > previousScore){
 
-				if(
-					leaderMonth === currentMonth
-				){
-					rightWidth = pct;
-				}
+	aheadPct = Math.min(
+		100,
+		Math.round(
+			((currentScore - previousScore) / currentScore) * 50
+		)
+	);
+
+}
+else{
+
+	aheadPct = 0;
+
+} 
+
 
 				const diffClass =
 					leaderMonth === previousMonth
@@ -1233,171 +859,51 @@ async function renderMonthComparison(){
 				const diffText =
 					previousScore === currentScore
 						? 'Even'
-						: Number(
-							x.Difference || 0
-						).toLocaleString();
+						: Number(x.Difference || 0).toLocaleString();
 
 				html += `
-
 					<div class="battle-line-row">
 
 						<div class="battle-line-top">
-
 							<div class="battle-line-area">
 								${x.WorkoutArea}
 							</div>
-
 							<div class="battle-line-diff ${diffClass}">
 								${diffText}
 							</div>
-
 						</div>
 
-						<div class="battle-line-track">
+<div class="month-progress-track">
 
-							<div class="battle-line-center"></div>
+	<div class="month-progress-center"></div>
 
-							<div
-								class="battle-line-fill left"
-								style="width:${leftWidth}%">
-							</div>
+	<div
+		class="month-progress-fill-left"
+		style="width:${behindPct}%">
+	</div>
+	<div
+		class="month-progress-fill-right"
+		style="width:${aheadPct}%">
+	</div>
 
-							<div
-								class="battle-line-fill right"
-								style="width:${rightWidth}%">
-							</div>
-
-						</div>
+</div>
 
 						<div class="battle-line-footer">
-
-							<span>
-								${previousScore.toLocaleString()}
-							</span>
-
-							<span>
-								${currentScore.toLocaleString()}
-							</span>
-
+							<span>${previousScore.toLocaleString()}</span>
+							<span>${currentScore.toLocaleString()}</span>
 						</div>
 
 					</div>
-
 				`;
-
 			});
 
-		/* ========================================
-		   TOTAL
-		   ======================================== */
-
-		const previousTotal =
-			Number(
-				data.PreviousPoints || 0
-			);
-
-		const currentTotal =
-			Number(
-				data.CurrentPoints || 0
-			);
-
-		const totalDiff =
-			Math.abs(
-				currentTotal -
-				previousTotal
-			);
-
-		const totalCombined =
-			currentTotal +
-			previousTotal;
-
-		const totalPct =
-			totalCombined
-				? Math.round(
-					(totalDiff / totalCombined) * 100
-				)
-				: 0;
-
-		let totalLeftWidth = 0;
-		let totalRightWidth = 0;
-
-		if(previousTotal > currentTotal){
-			totalLeftWidth = totalPct;
-		}
-
-		if(currentTotal > previousTotal){
-			totalRightWidth = totalPct;
-		}
-
-		const totalClass =
-			previousTotal > currentTotal
-				? 'battle-line-winner-left'
-				: currentTotal > previousTotal
-					? 'battle-line-winner-right'
-					: 'battle-line-even';
-
 		html += `
-
-			<div class="battle-line-row">
-
-				<div class="battle-line-top">
-
-					<div class="battle-line-area">
-						TOTAL
-					</div>
-
-					<div class="battle-line-diff ${totalClass}">
-						${totalDiff.toLocaleString()}
-					</div>
-
-				</div>
-
-				<div class="battle-line-track">
-
-					<div class="battle-line-center"></div>
-
-					<div
-						class="battle-line-fill left"
-						style="width:${totalLeftWidth}%">
-					</div>
-
-					<div
-						class="battle-line-fill right"
-						style="width:${totalRightWidth}%">
-					</div>
-
-				</div>
-
-				<div class="battle-line-footer">
-
-					<span>
-						${previousTotal.toLocaleString()}
-					</span>
-
-					<span>
-						${currentTotal.toLocaleString()}
-					</span>
-
-				</div>
-
+			<div class="month-label" style="margin-top:10px;text-align:center;">
+				${Number(data.PercentComplete || 0)}% of last month
 			</div>
-
-			<div
-				class="month-label"
-				style="
-					margin-top:10px;
-					text-align:center;
-				">
-
-				${Number(
-					data.PercentComplete || 0
-				)}% of last month
-
-			</div>
-
 		`;
 
-		box.innerHTML = html;
+	box.innerHTML = html;
 
 	}
 	catch(err){
@@ -1409,9 +915,9 @@ async function renderMonthComparison(){
 
 		box.innerHTML =
 			'<div class="card-row-value">Month comparison unavailable</div>';
+
 	}
 }
-
 
 /* ========================================
    PREVIOUS MONTH RESULTS
@@ -1505,9 +1011,9 @@ async function renderPreviousMonthResults(){
 		);
 
 		box.innerHTML =
-
 			'<div class="card-row-value">Unable to load previous month results</div>';
 
 	}
-
 }
+
+

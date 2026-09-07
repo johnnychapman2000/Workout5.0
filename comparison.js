@@ -171,3 +171,102 @@ const diffClass =
 
 	}
 }
+
+/* ========================================
+   PACE CHECK
+   Compare Current Month Pace
+   Against Last Month Pace
+   ======================================== */
+function renderPaceCheck(data){
+
+	let html = '';
+
+	const today =
+		new Date();
+
+	const currentDay =
+		today.getDate();
+
+	const daysInMonth =
+		new Date(
+			today.getFullYear(),
+			today.getMonth() + 1,
+			0
+		).getDate();
+
+	(data.Areas || [])
+	.forEach(x => {
+
+		const previousTotal =
+			Number(
+				x.PreviousScore || 0
+			);
+
+		const currentTotal =
+			Number(
+				x.CurrentScore || 0
+			);
+
+		if(previousTotal <= 0){
+			return;
+		}
+
+		const expectedToday =
+			(previousTotal / daysInMonth)
+			*
+			currentDay;
+
+		const pacePercent =
+			expectedToday > 0
+				?
+				Math.round(
+					(
+						(currentTotal - expectedToday)
+						/
+						expectedToday
+					)
+					*
+					100
+				)
+				: 0;
+
+const paceClass =
+	pacePercent >= 0
+		? 'battle-line-winner-left'
+		: 'battle-line-winner-right';
+
+const paceDifference =
+	Math.abs(
+		Math.round(
+			currentTotal - expectedToday
+		)
+	);
+
+const paceText =
+	pacePercent >= 0
+		? '+' + paceDifference.toLocaleString()
+			+ ' (' + pacePercent + '%)'
+		: '-' + paceDifference.toLocaleString()
+			+ ' (' + Math.abs(pacePercent) + '%)';
+	
+
+		html += `
+			<div class="card-row">
+
+				<div class="card-row-label">
+					${x.WorkoutArea}
+				</div>
+
+				<div class="card-row-value ${paceClass}">
+					${paceText}
+				</div>
+
+			</div>
+		`;
+
+	});
+
+	document.getElementById(
+		'paceCheckList'
+	).innerHTML = html;
+}

@@ -80,7 +80,27 @@
 </div>
 <!-- ======================================== -->
 
+<!-- ======================================== -->
+<!-- PACE CHECK -->
+<!-- ======================================== -->
 
+<div class="card">
+
+	<div class="card-header">
+		<div class="card-title">
+			📅 Pace Check
+		</div>
+	</div>
+
+	<div
+		id="paceCheckList"
+		class="card-list">
+
+		Loading...
+
+	</div>
+
+</div>
 
 	<!-- ======================================== -->
 	<!-- IMPROVEMENT / DECLINE -->
@@ -303,6 +323,7 @@
 
 			renderSummary(data);
 			renderMonthComparison();
+			renderPaceCheck(data);
 			renderComparisonBoard(data);
 			renderImprovement(data);
 			renderNeeded(data);

@@ -429,218 +429,235 @@ async function renderBattleLinesSummary(){
 			)[0];
 
 		/* ========================================
-		   MONTHLY LEADER
-		   ======================================== */
+   MONTHLY LEADER
+   ======================================== */
 
-		const standingsMap = {};
+const standingsMap = {};
 
-		data.forEach(x => {
+data.forEach(x => {
 
-			if(x.LeftUserCode){
+	if(x.LeftUserCode){
 
-				standingsMap[x.LeftUserCode] =
-					Math.max(
-						standingsMap[x.LeftUserCode] || 0,
-						Number(
-							x.MonthlyLeftTotal || 0
-						)
-					);
-
-			}
-
-			if(x.RightUserCode){
-
-				standingsMap[x.RightUserCode] =
-					Math.max(
-						standingsMap[x.RightUserCode] || 0,
-						Number(
-							x.MonthlyRightTotal || 0
-						)
-					);
-
-			}
-
-		});
-
-		const standings =
-			Object.keys(standingsMap)
-			.map(user => ({
-				user,
-				total: standingsMap[user]
-			}))
-			.sort(
-				(a,b) =>
-					b.total - a.total
+		standingsMap[x.LeftUserCode] =
+			Math.max(
+				standingsMap[x.LeftUserCode] || 0,
+				Number(
+					x.MonthlyLeftTotal || 0
+				)
 			);
 
-		const myIndex =
-			standings.findIndex(
-				x => x.user === me
+	}
+
+	if(x.RightUserCode){
+
+		standingsMap[x.RightUserCode] =
+			Math.max(
+				standingsMap[x.RightUserCode] || 0,
+				Number(
+					x.MonthlyRightTotal || 0
+				)
 			);
 
-		let volumeLeader = null;
-		let volumeGap = 0;
+	}
 
-		if(myIndex >= 0){
+});
 
-			if(myIndex === 0){
+const standings =
+	Object.keys(standingsMap)
+	.map(user => ({
+		user,
+		total: standingsMap[user]
+	}))
+	.sort(
+		(a,b) =>
+			b.total - a.total
+	);
 
-				volumeLeader =
-					standings[1] ||
-					standings[0];
+/* ========================================
+   TRUE MONTHLY LEADER
+   ======================================== */
 
-			}
-			else{
+const monthlyLeader =
+	standings.length
+		? standings[0]
+		: null;
 
-				volumeLeader =
-					standings[myIndex - 1];
+	const secondPlace =
+		standings[1];
 
-			}
+const myStanding =
+	standings.find(
+		x => x.user === me
+	);
 
-			if(volumeLeader){
+let volumeGap = 0;
 
-				volumeGap =
-					Math.abs(
-						standings[myIndex].total -
-						volumeLeader.total
-					);
+if(
+	monthlyLeader &&
+	myStanding
+){
 
-			}
 
-		}
+	if(secondPlace){
 
-		let html = '';
-
-		if(takeoverOpportunity){
-
-			html += `
-				<div class="card-row">
-					<div class="card-row-label">
-						🎯 Takeover Opportunity
-					</div>
-					<div class="card-row-value">
-						${takeoverOpportunity.WorkoutArea}
-						(${Number(
-							takeoverOpportunity.Difference || 0
-						).toLocaleString()})
-					</div>
-				</div>
-			`;
-
-		}
-
-		if(largestMargin){
-
-			const largestLabel =
-				largestMargin.LeaderUserCode === me
-					? '🏆 Biggest Lead'
-					: '⚠️ Biggest Deficit';
-
-			html += `
-				<div class="card-row">
-					<div class="card-row-label">
-						${largestLabel}
-					</div>
-					<div class="card-row-value">
-						${largestMargin.WorkoutArea}
-						(${Number(
-							largestMargin.Difference || 0
-						).toLocaleString()})
-					</div>
-				</div>
-			`;
-
-		}
-
-		if(volumeLeader){
-
-			const myTotal =
-				standings[myIndex].total;
-
-			const leaderTotal =
-				volumeLeader.total;
-
-			const combinedTotal =
-				myTotal + leaderTotal;
-
-			const myPct =
-				combinedTotal
-					? Math.round(
-						(myTotal / combinedTotal) * 100
-					)
-					: 50;
-
-			const leaderPct =
-				100 - myPct;
-
-			html += `
-				<div class="card-row">
-					<div class="card-row-label">
-						👑 Monthly Leader
-					</div>
-					<div class="card-row-value">
-						${volumeLeader.user}
-						(${volumeGap.toLocaleString()})
-					</div>
-				</div>
-
-				<div class="battle-lines-mini">
-
-					<div class="battle-line-track">
-
-						<div class="battle-line-center"></div>
-
-						<div
-							class="battle-line-fill left"
-							style="width:${myPct}%">
-						</div>
-
-						<div
-							class="battle-line-fill right"
-							style="width:${leaderPct}%">
-						</div>
-
-					</div>
-
-					<div class="battle-line-footer">
-
-						<span>
-							${me} ${myTotal.toLocaleString()}
-						</span>
-
-						<span>
-							${volumeLeader.user} ${leaderTotal.toLocaleString()}
-						</span>
-
-					</div>
-
-				</div>
-			`;
-
-		}
-
-		html += `
-			<div class="battle-lines-link">
-				⚔️ View Full Battle Lines →
-			</div>
-		`;
-
-		box.innerHTML = html;
+		volumeGap =
+			Math.abs(
+				monthlyLeader.total -
+				secondPlace.total
+			);
 
 	}
-	catch(err){
 
-		console.error(
-			'Battle Lines Summary failed:',
-			err
-		);
-
-		box.innerHTML =
-			'<div class="card-row-value">Battle Lines unavailable</div>';
-
-	}
 }
 
+let html = '';
+
+/* ========================================
+   TAKEOVER OPPORTUNITY
+   ======================================== */
+
+if(takeoverOpportunity){
+
+	html += `
+		<div class="card-row">
+			<div class="card-row-label">
+				🎯 Takeover Opportunity
+			</div>
+			<div class="card-row-value">
+				${takeoverOpportunity.WorkoutArea}
+				(${Number(
+					takeoverOpportunity.Difference || 0
+				).toLocaleString()})
+			</div>
+		</div>
+	`;
+
+}
+
+/* ========================================
+   BIGGEST LEAD / DEFICIT
+   ======================================== */
+
+if(largestMargin){
+
+	const largestLabel =
+		largestMargin.LeaderUserCode === me
+			? '🏆 Biggest Lead'
+			: '⚠️ Biggest Deficit';
+
+	html += `
+		<div class="card-row">
+			<div class="card-row-label">
+				${largestLabel}
+			</div>
+			<div class="card-row-value">
+				${largestMargin.WorkoutArea}
+				(${Number(
+					largestMargin.Difference || 0
+				).toLocaleString()})
+			</div>
+		</div>
+	`;
+
+}
+
+/* ========================================
+   MONTHLY LEADER DISPLAY
+   ======================================== */
+
+if(monthlyLeader && myStanding){
+
+	const myTotal =
+		myStanding.total;
+
+const leaderTotal =
+	secondPlace
+		? secondPlace.total
+		: monthlyLeader.total;
+
+	const combinedTotal =
+		myTotal + leaderTotal;
+
+	const myPct =
+		combinedTotal
+			? Math.round(
+				(myTotal / combinedTotal) * 100
+			)
+			: 50;
+
+	const leaderPct =
+		100 - myPct;
+
+	html += `
+		<div class="card-row">
+			<div class="card-row-label">
+				👑 Monthly Leader
+			</div>
+<div class="card-row-value">
+	${monthlyLeader.user}
+	(${volumeGap.toLocaleString()})
+</div>
+		</div>
+
+		<div class="battle-lines-mini">
+
+			<div class="battle-line-track">
+
+				<div class="battle-line-center"></div>
+
+				<div
+					class="battle-line-fill left"
+					style="width:${myPct}%">
+				</div>
+
+				<div
+					class="battle-line-fill right"
+					style="width:${leaderPct}%">
+				</div>
+
+			</div>
+
+			<div class="battle-line-footer">
+
+				<span>
+					${me} ${myTotal.toLocaleString()}
+				</span>
+
+<span>
+	${secondPlace.user} ${leaderTotal.toLocaleString()}
+</span>
+
+			</div>
+
+		</div>
+	`;
+
+}
+
+/* ========================================
+   LINK
+   ======================================== */
+
+html += `
+	<div class="battle-lines-link">
+		⚔️ View Full Battle Lines →
+	</div>
+`;
+
+box.innerHTML = html;
+}
+catch(err){
+
+	console.error(
+		'Battle Lines Summary failed:',
+		err
+	);
+
+	box.innerHTML =
+		'<div class="card-row-value">Battle Lines unavailable</div>';
+
+}
+}
 
 /* ========================================
    LEAD CHASE

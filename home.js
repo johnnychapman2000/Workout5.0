@@ -123,6 +123,7 @@ renderRecentActivity(hist);
 //renderBattleLines2();
 renderBattleLinesSummary();
 renderLeadChase();
+console.log('CALLING PREVIOUS MONTH');
 renderPreviousMonthResults();
 renderMonthComparison();
 
@@ -364,6 +365,8 @@ async function renderBattleLinesSummary(){
 	if(!box){
 		return;
 	}
+const dayOfMonth = new Date().getDate();
+
 
 	try{
 
@@ -769,14 +772,24 @@ async function renderLeadChase(){
 
 async function renderPreviousMonthResults(){
 
-	const box =
-		document.getElementById(
-			'previousMonthResults'
-		);
+    const box =
+        document.getElementById(
+            'previousMonthResults'
+        );
+    if(!box){
+        return;
+    }
 
-	if(!box){
-		return;
-	}
+    const dayOfMonth = new Date().getDate();
+
+if(dayOfMonth > 7){
+
+    console.log('HIDING CARD');
+
+    document.querySelector('.previous-month-card').style.display = 'none';
+
+    return;
+}
 
 	try{
 

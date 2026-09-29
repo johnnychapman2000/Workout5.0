@@ -208,14 +208,23 @@ async function saveQuickEntry(){
 	saveButton.disabled = true;
 	saveButton.innerText = 'Processing...';
 
-	try{
+try{
 
-console.log(payload);
+if(ex.ExerciseType === 'Endurance'){
 
-		await fetch(API,{
-			method:'POST',
-			body:JSON.stringify(payload)
-		});
+    console.log(
+        'ENDURANCE SAVE',
+        ex.ExerciseName,
+        payload.Distance || payload.Sets,
+        ex.DistanceUnit
+    );
+}
+
+await fetch(API,{
+    method:'POST',
+    body:JSON.stringify(payload)
+});
+
 
 saveButton.innerText = 'Saved ✓';
 
@@ -228,16 +237,23 @@ setTimeout(() => {
 	}, 800);
 
 	}
-	catch(err){
-	
-		saveButton.disabled = false;
-	
-		saveButton.innerText = 'Save';
+catch(err){
 
-		quickSaving = false;
+    console.error(
+        'QUICK ENTRY ERROR',
+        err
+    );
 
-		alert('Save Failed');
-	}
+    console.error(
+        err?.stack || err
+    );
+
+    saveButton.disabled = false;
+
+    saveButton.innerText = 'Save';
+
+    quickSaving = false;
+}
 }
 
 initQuickEntry();

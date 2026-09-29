@@ -29,7 +29,6 @@ const w =
 		15
 	);
 
-
 const p =
 	await getCachedData(
 		getProfileCacheKey(
@@ -110,7 +109,6 @@ LEADCHASE =
 		)
 	).json();
 
-console.log('LEAD CHASE DATA', LEADCHASE);
 
 EXERCISES =
 	await getCachedData(
@@ -207,27 +205,6 @@ const chaseExercises =
 	EXERCISES.filter(
 		x => x.WorkoutArea === leadArea
 	);
-
-console.log(
-	'LEAD AREA',
-	leadArea
-);
-
-console.log(
-	'CHASE EXERCISES',
-	chaseExercises.map(
-		x => ({
-			Name:x.ExerciseName,
-			Area:x.WorkoutArea
-		})
-	)
-);
-
-
-console.log(
-	'Lead Chase Exercises',
-	chaseExercises
-);
 
 const historyExercises =
 	chaseExercises.filter(e =>
@@ -917,52 +894,96 @@ console.log(
 
 const attentionScores = [];
 
+const paceScores = [];
+
 EXERCISES.forEach(exercise => {
 
 	const exerciseName =
 		exercise.ExerciseName;
 
-const current =
-	currentMonthVolume[exerciseName] || 0;
+	const current =
+		currentMonthVolume[exerciseName] || 0;
 
-const previous =
-	previousMonthVolume[exerciseName] || 0;
+	const previous =
+		previousMonthVolume[exerciseName] || 0;
 
-	let score = 0;
+let score = 0;
 
-if(previous === 0){
-
-	score =
-		current > 0
-			? 100
-			: -100;
-
+if(previous > 0){
+    score = Math.round(
+        ((current - previous) / previous) * 100
+    );
 }
-else{
-
-	const expected =
-		previous * monthProgress;
-
-	score =
-		Math.round(
-			((current - expected) / expected) * 100
-		);
-
+else if(current > 0){
+    score = 100;
 }
 
-attentionScores.push({
-	ExerciseName: exerciseName,
-	Current: current,
-	Previous: previous,
-	Score: score
-});
-});
 
+if(exerciseName === 'Biking'){
+    console.log(
+        'BIKING SCORE',
+        {
+            current,
+            previous
+        }
+    );
+}
+	attentionScores.push({
+		ExerciseName: exerciseName,
+		Current: current,
+		Previous: previous,
+		Score: score
+	});
+
+	let pacePercent = 0;
+	let pacePoints = 0;
+
+	if(previous > 0){
+
+		const expected =
+			previous * monthProgress;
+
+		pacePoints =
+			Math.round(
+				current - expected
+			);
+
+		pacePercent =
+			expected > 0
+				?
+				Math.round(
+					(
+						(current - expected)
+						/
+						expected
+					) * 100
+				)
+				: 0;
+
+	}
+
+	paceScores.push({
+		ExerciseName: exerciseName,
+		PacePercent: pacePercent,
+		PacePoints: pacePoints,
+		Current: current,
+		Previous: previous
+	});
+
+});
 
 attentionScores.sort(
 	(a,b) => a.Score - b.Score
 );
 
+paceScores.sort(
+	(a,b) => a.PacePoints - b.PacePoints
+);
+
+const filteredPaceScores =
+	paceScores.filter(
+		x => x.Previous > 0
+	);
 
 
 attentionScores
@@ -998,11 +1019,6 @@ EXERCISES.forEach(ex => {
 	exerciseLookup[ex.ExerciseName] = ex;
 });
 
-console.log(
-	'ACTIVE EXERCISES',
-	EXERCISES.map(x => x.ExerciseName)
-);
-
 attentionScores
 	.slice(0,10)
 	.forEach(item => {
@@ -1018,6 +1034,35 @@ attentionScores
 			<div class=row onclick='openEx(${ex.ExerciseID})'>
 				<div>${item.ExerciseName}</div>
 				<div class=target>${item.Score}%</div>
+				<div class='dot red'></div>
+			</div>
+		`;
+
+	});
+
+h += '<div class=section>⏱ 10 Most Behind Pace</div>';
+
+filteredPaceScores
+    .slice(0,10)
+    .forEach(item => {
+
+		const ex =
+			exerciseLookup[item.ExerciseName];
+
+		if(!ex){
+			return;
+		}
+
+		h += `
+			<div class=row onclick='openEx(${ex.ExerciseID})'>
+				<div>${item.ExerciseName}</div>
+				<div class=target>
+					${item.PacePercent}% (${
+						item.PacePoints > 0
+							? '+' + item.PacePoints.toLocaleString()
+							: item.PacePoints.toLocaleString()
+					})
+				</div>
 				<div class='dot red'></div>
 			</div>
 		`;
@@ -1068,10 +1113,12 @@ completedToday.forEach(log => {
 		<div class=row>
 			<div>${log.ExerciseName}</div>
 			<div class=target>
-				${log.Weight
-					? `${log.Sets}×${log.Reps}×${log.Weight}`
-					: `${log.Sets}×${log.Reps}`
-				}
+${log.Distance
+    ? `${log.Distance} ${log.DistanceUnit || ''}`
+    : log.Weight
+        ? `${log.Sets}×${log.Reps}×${log.Weight}`
+        : `${log.Sets}×${log.Reps}`
+}
 			</div>
 			<div class='dot green'></div>
 		</div>
@@ -1082,7 +1129,10 @@ list.innerHTML=h;
 }
 
 catch(e){
-  console.error(e);
+  console.error('ERROR:', e);
+  console.error('STACK:', e.stack);
+
+  alert(e.stack);
 
   list.innerHTML =
     '<div style="color:#ff5757;padding:20px;">' +
@@ -1122,16 +1172,21 @@ const log=HISTORY.find(x=>
 if(e.ExerciseName === 'Rear Deltoid'){
 
 }
-		if(log){
+if(log){
 
-			if(log.Weight){
-				display=`${log.Sets}×${log.Reps}×${log.Weight}`;
-			}
-			else{
-				display=`${log.Sets}×${log.Reps}`;
-			}
-
-		}
+    if(log.Distance){
+        display =
+            `${log.Distance} ${log.DistanceUnit || ''}`;
+    }
+    else if(log.Weight){
+        display =
+            `${log.Sets}×${log.Reps}×${log.Weight}`;
+    }
+    else{
+        display =
+            `${log.Sets}×${log.Reps}`;
+    }
+}
 
 	}
 

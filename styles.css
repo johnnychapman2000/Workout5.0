@@ -248,7 +248,7 @@ body{
 
 .row{
 	display:grid;
-	grid-template-columns:1fr 80px 24px;
+	grid-template-columns:1fr 140px 24px;
 	align-items:center;
 	background:linear-gradient(
 		180deg,
@@ -265,6 +265,7 @@ body{
 .target{
 	text-align:right;
 	padding-right:22px;
+	white-space: nowrap;
 }
 
 .dot{
